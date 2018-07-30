@@ -1,4 +1,5 @@
 variable "ami" {}
+variable "ami_user" {}
 
 variable "provider" {
   type        = "map"

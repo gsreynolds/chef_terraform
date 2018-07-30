@@ -2,6 +2,8 @@ variable "deployment_name" {}
 
 variable "ami" {}
 
+variable "ami_user" {}
+
 variable "default_tags" {
   type        = "map"
   description = "Default resource tags"

@@ -50,7 +50,7 @@ resource "aws_instance" "chef_clients" {
   }
 
   provisioner "file" {
-    source      = "first-boot.json"
+    source      = "${path.module}/first-boot.json"
     destination = "first-boot.json"
   }
 

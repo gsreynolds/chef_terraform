@@ -51,6 +51,7 @@ module "chef_automate2" {
   source = "./chef_automate2"
 
   ami                     = "${data.aws_ami.ubuntu.id}"
+  ami_user                = "${var.ami_user}"
   default_tags            = "${var.default_tags}"
   instance                = "${var.instance}"
   instance_keys           = "${var.instance_keys}"
@@ -68,6 +69,7 @@ module "chef_server" {
   source = "./chef_server"
 
   ami                     = "${data.aws_ami.ubuntu.id}"
+  ami_user                = "${var.ami_user}"
   default_tags            = "${var.default_tags}"
   instance                = "${var.instance}"
   instance_keys           = "${var.instance_keys}"
@@ -96,6 +98,7 @@ module "chef_clients" {
   source = "./chef_clients"
 
   ami                                      = "${data.aws_ami.ubuntu.id}"
+  ami_user                                 = "${var.ami_user}"
   default_tags                             = "${var.default_tags}"
   instance                                 = "${var.instance}"
   instance_keys                            = "${var.instance_keys}"
