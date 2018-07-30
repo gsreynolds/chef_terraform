@@ -7,6 +7,8 @@ locals {
   deployment_name = "${var.application_name}"
 }
 
+data "aws_caller_identity" "current" {}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -112,4 +114,8 @@ module "chef_clients" {
 
 module "chef_unattended_registration" {
   source = "./chef_unattended_registration"
+
+  provider           = "${var.provider}"
+  account_id         = "${data.aws_caller_identity.current.account_id}"
+  validator_key_path = "${var.validator_key_path}"
 }

@@ -30,14 +30,19 @@ resource "aws_iam_policy" "chef_validator" {
 {
     "Version": "2012-10-17",
     "Statement": [
+{
+            "Effect": "Allow",
+            "Action": [
+                "ssm:DescribeParameters"
+            ],
+            "Resource": "*"
+        },
         {
             "Effect": "Allow",
             "Action": [
-                "ssm:Describe*",
-                "ssm:Get*",
-                "ssm:List*"
+                "ssm:Get*"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:ssm:${var.provider["region"]}:${var.account_id}:parameter${var.validator_key_path}*"
         }
     ]
 }
