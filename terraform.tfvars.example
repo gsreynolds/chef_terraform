@@ -1,0 +1,38 @@
+provider = {
+  region  = "eu-west-1"
+  profile = ""
+}
+
+default_tags = {
+  X-Dept        = ""
+  X-Contact     = ""
+  X-Project     = ""
+  X-Production  = false
+  X-TTL         = 168
+  X-Environment = ""
+  X-Application = "Chef Automate"
+}
+
+vpc = {
+  cidr_block = "10.0.0.0/24"
+}
+
+az_subnets = {
+  eu-west-1a = "10.0.0.0/27"
+  eu-west-1b = "10.0.0.32/27"
+  eu-west-1c = "10.0.0.64/27"
+}
+
+ssh_whitelist_cidrs = ["0.0.0.0/0"]
+
+domain = ""
+
+instance_hostname = {
+  chef_server     = ""
+  automate_server = ""
+}
+
+instance_keys = {
+  key_name = ""
+  key_file = ""
+}
