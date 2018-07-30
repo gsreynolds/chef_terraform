@@ -21,9 +21,9 @@ variable "default_tags" {
 }
 
 variable "az_subnet_ids" {
-  type        = "map"
+  type        = "list"
   description = "Availability zone subnet IDs"
-  default     = {}
+  default     = []
 }
 
 variable "ssh_security_group_id" {}

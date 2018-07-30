@@ -7,7 +7,7 @@ resource "aws_instance" "chef_clients" {
   # ebs_optimized               = "${var.instance["ebs_optimized"]}"
   instance_type               = "${var.instance["chef_client_flavor"]}"
   associate_public_ip_address = "${var.instance["chef_client_public"]}"
-  subnet_id                   = "${element(var.az_subnet_ids, count.index % length(keys(var.az_subnet_ids)))}"
+  subnet_id                   = "${element(var.az_subnet_ids, count.index)}"
   vpc_security_group_ids      = ["${var.ssh_security_group_id}"]
   key_name                    = "${var.instance_keys["key_name"]}"
 

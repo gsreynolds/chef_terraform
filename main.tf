@@ -31,12 +31,30 @@ data "aws_route53_zone" "zone" {
 }
 
 # ==========
+# module "vpc" {
+#   source          = "./vpc"
+#   default_tags    = "${var.default_tags}"
+#   az_subnets      = "${var.az_subnets}"
+#   vpc             = "${var.vpc}"
+#   deployment_name = "${local.deployment_name}"
+# }
+
+# https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/1.37.0
 module "vpc" {
-  source          = "./vpc"
-  default_tags    = "${var.default_tags}"
-  az_subnets      = "${var.az_subnets}"
-  vpc             = "${var.vpc}"
-  deployment_name = "${local.deployment_name}"
+  source = "terraform-aws-modules/vpc/aws"
+
+  name = "${local.deployment_name}"
+  cidr = "10.0.0.0/16"
+
+  azs = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+
+  # private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+
+  # enable_nat_gateway = true
+  # enable_vpn_gateway = true
+
+  tags = "${var.default_tags}"
 }
 
 module "security_groups" {
@@ -58,7 +76,7 @@ module "chef_automate2" {
   instance_hostname       = "${var.instance_hostname}"
   domain                  = "${var.domain}"
   zone_id                 = "${data.aws_route53_zone.zone.id}"
-  subnet                  = "${element(module.vpc.subnet_ids, 1 % length(keys(var.az_subnets)))}"
+  subnet                  = "${element(module.vpc.public_subnets, 1 % length(keys(var.az_subnets)))}"
   ssh_security_group_id   = "${module.security_groups.ssh_security_group_id}"
   https_security_group_id = "${module.security_groups.https_security_group_id}"
   deployment_name         = "${local.deployment_name}"
@@ -76,7 +94,7 @@ module "chef_server" {
   instance_hostname       = "${var.instance_hostname}"
   domain                  = "${var.domain}"
   zone_id                 = "${data.aws_route53_zone.zone.id}"
-  subnet                  = "${element(module.vpc.subnet_ids, 1 % length(keys(var.az_subnets)))}"
+  subnet                  = "${element(module.vpc.public_subnets, 1 % length(keys(var.az_subnets)))}"
   ssh_security_group_id   = "${module.security_groups.ssh_security_group_id}"
   https_security_group_id = "${module.security_groups.https_security_group_id}"
   deployment_name         = "${local.deployment_name}"
@@ -105,7 +123,7 @@ module "chef_clients" {
   instance_hostname                        = "${var.instance_hostname}"
   domain                                   = "${var.domain}"
   zone_id                                  = "${data.aws_route53_zone.zone.id}"
-  az_subnet_ids                            = "${module.vpc.subnet_ids}"
+  az_subnet_ids                            = "${module.vpc.public_subnets}"
   ssh_security_group_id                    = "${module.security_groups.ssh_security_group_id}"
   https_security_group_id                  = "${module.security_groups.https_security_group_id}"
   validator_key_path                       = "${var.validator_key_path}"
