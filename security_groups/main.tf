@@ -49,14 +49,14 @@ resource "aws_security_group" "https" {
 
 ## Backend
 resource "aws_security_group" "backend" {
-  name        = "${local.deployment_name} Backend SG"
-  description = "${local.deployment_name} Backend SG"
+  name        = "${var.deployment_name} Backend SG"
+  description = "${var.deployment_name} Backend SG"
   vpc_id      = "${var.vpc_id}"
 
   tags = "${merge(
     var.default_tags,
     map(
-      "Name", "${local.deployment_name} Backend SG"
+      "Name", "${var.deployment_name} Backend SG"
     )
   )}"
 }

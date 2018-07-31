@@ -69,11 +69,6 @@ variable "domain" {
   default     = ""
 }
 
-variable "frontend_hostname" {
-  description = "Frontend ALB hostname name"
-  default     = "chef"
-}
-
 variable "instance_keys" {
   type        = "map"
   description = ""
@@ -133,17 +128,6 @@ variable "chef_frontend" {
     count   = 3
     version = "12.17.33"
   }
-}
-
-variable "log_bucket" {
-  description = "Chef HA Log bucket"
-  default     = "chef-ha-logs"
-}
-
-# https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions#
-variable "elb_account_id" {
-  description = "Elastic Load Balancing Account ID for region eu-west-1"
-  default     = "156460612806"
 }
 
 variable "r53_ttl" {

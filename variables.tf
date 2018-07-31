@@ -121,3 +121,8 @@ variable "validator_key_path" {
 
   default = "/chef/test/"
 }
+
+variable "frontend_hostname" {
+  description = "Frontend ALB hostname name"
+  default     = "chef"
+}

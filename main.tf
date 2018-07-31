@@ -118,13 +118,28 @@ module "chef_ha" {
   zone_id                   = "${data.aws_route53_zone.zone.id}"
 }
 
+module "chef_alb" {
+  source = "./chef_alb"
+
+  account_id              = "${data.aws_caller_identity.current.account_id}"
+  az_subnet_ids           = "${module.vpc.public_subnets}"
+  chef_target_count       = "${var.create_chef_ha ? var.chef_frontend["count"] : 1}"
+  deployment_name         = "${local.deployment_name}"
+  domain                  = "${var.domain}"
+  frontend_hostname       = "${var.frontend_hostname}"
+  https_security_group_id = "${module.security_groups.https_security_group_id}"
+  target_ids              = "${element(concat(module.chef_ha.frontend_ids, module.chef_server.chef_server_id), 0)}"
+  vpc_id                  = "${module.vpc.vpc_id}"
+  zone_id                 = "${data.aws_route53_zone.zone.id}"
+}
+
 module "chef_clients" {
   source = "./chef_clients"
 
   ami                                      = "${data.aws_ami.ubuntu.id}"
   ami_user                                 = "${var.ami_user}"
   az_subnet_ids                            = "${module.vpc.public_subnets}"
-  chef_server_fqdn                         = "${module.chef_server.chef_server_fqdn}"
+  chef_server_fqdn                         = "${module.chef_alb.chef_alb_fqdn}"
   default_tags                             = "${var.default_tags}"
   domain                                   = "${var.domain}"
   https_security_group_id                  = "${module.security_groups.https_security_group_id}"
