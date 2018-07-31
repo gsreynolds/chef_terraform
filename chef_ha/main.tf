@@ -69,7 +69,7 @@ resource "aws_instance" "frontends" {
   instance_type               = "${var.instance["frontend_flavor"]}"
   associate_public_ip_address = "${var.instance["frontend_public"]}"
   subnet_id                   = "${element(var.az_subnet_ids, count.index)}"
-  vpc_security_group_ids      = ["${var.frontend_security_group_id}", "${var.ssh_security_group_id}"]
+  vpc_security_group_ids      = ["${var.https_security_group_id}", "${var.ssh_security_group_id}"]
   key_name                    = "${var.instance_keys["key_name"]}"
 
   tags = "${merge(
@@ -228,7 +228,7 @@ resource "aws_acm_certificate_validation" "cert" {
 module "alb" {
   source              = "terraform-aws-modules/alb/aws"
   load_balancer_name  = "${replace(local.alb_fqdn,".","-")}-alb"
-  security_groups     = ["${frontend_security_group_id}"]
+  security_groups     = ["${var.https_security_group_id}"]
   log_bucket_name     = "${aws_s3_bucket.logs.bucket}"
   log_location_prefix = "alb"
   subnets             = ["${az_subnet_ids}"]

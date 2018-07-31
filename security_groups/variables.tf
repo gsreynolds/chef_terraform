@@ -16,3 +16,6 @@ variable "ssh_whitelist_cidrs" {
 }
 
 variable "vpc_id" {}
+
+variable "zone_id" {}
+variable "account_id" {}

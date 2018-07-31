@@ -63,6 +63,8 @@ module "security_groups" {
   ssh_whitelist_cidrs = "${var.ssh_whitelist_cidrs}"
   vpc_id              = "${module.vpc.vpc_id}"
   deployment_name     = "${local.deployment_name}"
+  zone_id             = "${data.aws_route53_zone.zone.id}"
+  account_id          = "${data.aws_caller_identity.current.account_id}"
 }
 
 module "chef_automate2" {
@@ -104,16 +106,20 @@ module "chef_server" {
 module "chef_ha" {
   source = "./chef_ha"
 
-  vpc_id        = "${module.vpc.vpc_id}"
-  ami           = "${data.aws_ami.ubuntu.id}"
-  ami_user      = "${var.ami_user}"
-  default_tags  = "${var.default_tags}"
-  instance      = "${var.instance}"
-  instance_keys = "${var.instance_keys}"
-  domain        = "${var.domain}"
-  zone_id       = "${data.aws_route53_zone.zone.id}"
-  az_subnet_ids = "${module.vpc.public_subnets}"
-  account_id    = "${data.aws_caller_identity.current.account_id}"
+  vpc_id                    = "${module.vpc.vpc_id}"
+  ami                       = "${data.aws_ami.ubuntu.id}"
+  ami_user                  = "${var.ami_user}"
+  default_tags              = "${var.default_tags}"
+  instance                  = "${var.instance}"
+  instance_keys             = "${var.instance_keys}"
+  domain                    = "${var.domain}"
+  zone_id                   = "${data.aws_route53_zone.zone.id}"
+  az_subnet_ids             = "${module.vpc.public_subnets}"
+  account_id                = "${data.aws_caller_identity.current.account_id}"
+  ssh_security_group_id     = "${module.security_groups.ssh_security_group_id}"
+  https_security_group_id   = "${module.security_groups.https_security_group_id}"
+  backend_security_group_id = "${module.security_groups.backend_security_group_id}"
+  deployment_name           = "${local.deployment_name}"
 }
 
 module "chef_clients" {

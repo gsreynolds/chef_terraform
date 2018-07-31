@@ -33,7 +33,7 @@ variable "default_tags" {
 }
 
 variable "ssh_security_group_id" {}
-variable "frontend_security_group_id" {}
+variable "https_security_group_id" {}
 variable "backend_security_group_id" {}
 
 variable "vpc" {
@@ -147,3 +147,6 @@ variable "r53_ttl" {
 
   default = "180"
 }
+
+variable "zone_id" {}
+variable "account_id" {}

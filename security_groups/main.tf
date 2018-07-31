@@ -35,55 +35,23 @@ resource "aws_security_group_rule" "allow_egress" {
 
 ## Chef Automate & Chef Server
 resource "aws_security_group" "https" {
-  name        = "${var.deployment_name} Chef Automate SG"
-  description = "${var.deployment_name} Chef Automate SG"
+  name        = "${var.deployment_name} HTTPS SG"
+  description = "${var.deployment_name} HTTPS SG"
   vpc_id      = "${var.vpc_id}"
 
   tags = "${merge(
     var.default_tags,
     map(
-      "Name", "${var.deployment_name} Chef Automate SG"
+      "Name", "${var.deployment_name} HTTPS SG"
     )
   )}"
-}
-
-resource "aws_security_group_rule" "allow_https" {
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = "${aws_security_group.https.id}"
-}
-
-## Frontend
-resource "aws_security_group" "frontend" {
-  name        = "${local.deployment_name} Frontend SG"
-  description = "${local.deployment_name} Frontend SG"
-  vpc_id      = "${aws_vpc.main.id}"
-
-  tags = "${merge(
-    var.default_tags,
-    map(
-      "Name", "${local.deployment_name} Frontend SG"
-    )
-  )}"
-}
-
-resource "aws_security_group_rule" "allow_https" {
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = "${aws_security_group.frontend.id}"
 }
 
 ## Backend
 resource "aws_security_group" "backend" {
   name        = "${local.deployment_name} Backend SG"
   description = "${local.deployment_name} Backend SG"
-  vpc_id      = "${aws_vpc.main.id}"
+  vpc_id      = "${var.vpc_id}"
 
   tags = "${merge(
     var.default_tags,
@@ -108,7 +76,7 @@ resource "aws_security_group_rule" "backend_2379_tcp" {
   from_port                = 2379
   to_port                  = 2379
   protocol                 = "tcp"
-  source_security_group_id = "${aws_security_group.frontend.id}"
+  source_security_group_id = "${aws_security_group.https.id}"
   security_group_id        = "${aws_security_group.backend.id}"
 }
 
@@ -118,7 +86,7 @@ resource "aws_security_group_rule" "backend_5432_tcp" {
   from_port                = 5432
   to_port                  = 5432
   protocol                 = "tcp"
-  source_security_group_id = "${aws_security_group.frontend.id}"
+  source_security_group_id = "${aws_security_group.https.id}"
   security_group_id        = "${aws_security_group.backend.id}"
 }
 
@@ -128,7 +96,7 @@ resource "aws_security_group_rule" "backend_7331_tcp" {
   from_port                = 7331
   to_port                  = 7331
   protocol                 = "tcp"
-  source_security_group_id = "${aws_security_group.frontend.id}"
+  source_security_group_id = "${aws_security_group.https.id}"
   security_group_id        = "${aws_security_group.backend.id}"
 }
 
@@ -138,6 +106,6 @@ resource "aws_security_group_rule" "backend_9200_tcp" {
   from_port                = 9200
   to_port                  = 9200
   protocol                 = "tcp"
-  source_security_group_id = "${aws_security_group.frontend.id}"
+  source_security_group_id = "${aws_security_group.https.id}"
   security_group_id        = "${aws_security_group.backend.id}"
 }
