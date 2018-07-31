@@ -30,15 +30,6 @@ data "aws_route53_zone" "zone" {
   private_zone = false
 }
 
-# ==========
-# module "vpc" {
-#   source          = "./vpc"
-#   default_tags    = "${var.default_tags}"
-#   az_subnets      = "${var.az_subnets}"
-#   vpc             = "${var.vpc}"
-#   deployment_name = "${local.deployment_name}"
-# }
-
 # https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/1.37.0
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
