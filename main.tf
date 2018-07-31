@@ -58,13 +58,14 @@ module "vpc" {
 }
 
 module "security_groups" {
-  source              = "./security_groups"
+  source = "./security_groups"
+
+  account_id          = "${data.aws_caller_identity.current.account_id}"
   default_tags        = "${var.default_tags}"
+  deployment_name     = "${local.deployment_name}"
   ssh_whitelist_cidrs = "${var.ssh_whitelist_cidrs}"
   vpc_id              = "${module.vpc.vpc_id}"
-  deployment_name     = "${local.deployment_name}"
   zone_id             = "${data.aws_route53_zone.zone.id}"
-  account_id          = "${data.aws_caller_identity.current.account_id}"
 }
 
 module "chef_automate2" {
@@ -73,16 +74,16 @@ module "chef_automate2" {
   ami                     = "${data.aws_ami.ubuntu.id}"
   ami_user                = "${var.ami_user}"
   default_tags            = "${var.default_tags}"
-  instance                = "${var.instance}"
-  instance_keys           = "${var.instance_keys}"
-  instance_hostname       = "${var.instance_hostname}"
-  domain                  = "${var.domain}"
-  zone_id                 = "${data.aws_route53_zone.zone.id}"
-  subnet                  = "${element(module.vpc.public_subnets, 1 % length(keys(var.az_subnets)))}"
-  ssh_security_group_id   = "${module.security_groups.ssh_security_group_id}"
-  https_security_group_id = "${module.security_groups.https_security_group_id}"
   deployment_name         = "${local.deployment_name}"
+  domain                  = "${var.domain}"
+  https_security_group_id = "${module.security_groups.https_security_group_id}"
+  instance                = "${var.instance}"
+  instance_hostname       = "${var.instance_hostname}"
+  instance_keys           = "${var.instance_keys}"
   r53_ttl                 = "${var.r53_ttl}"
+  ssh_security_group_id   = "${module.security_groups.ssh_security_group_id}"
+  subnet                  = "${element(module.vpc.public_subnets, 1 % length(keys(var.az_subnets)))}"
+  zone_id                 = "${data.aws_route53_zone.zone.id}"
 }
 
 module "chef_server" {
@@ -91,35 +92,35 @@ module "chef_server" {
   ami                     = "${data.aws_ami.ubuntu.id}"
   ami_user                = "${var.ami_user}"
   default_tags            = "${var.default_tags}"
-  instance                = "${var.instance}"
-  instance_keys           = "${var.instance_keys}"
-  instance_hostname       = "${var.instance_hostname}"
-  domain                  = "${var.domain}"
-  zone_id                 = "${data.aws_route53_zone.zone.id}"
-  subnet                  = "${element(module.vpc.public_subnets, 1 % length(keys(var.az_subnets)))}"
-  ssh_security_group_id   = "${module.security_groups.ssh_security_group_id}"
-  https_security_group_id = "${module.security_groups.https_security_group_id}"
   deployment_name         = "${local.deployment_name}"
+  domain                  = "${var.domain}"
+  https_security_group_id = "${module.security_groups.https_security_group_id}"
+  instance                = "${var.instance}"
+  instance_hostname       = "${var.instance_hostname}"
+  instance_keys           = "${var.instance_keys}"
   r53_ttl                 = "${var.r53_ttl}"
+  ssh_security_group_id   = "${module.security_groups.ssh_security_group_id}"
+  subnet                  = "${element(module.vpc.public_subnets, 1 % length(keys(var.az_subnets)))}"
+  zone_id                 = "${data.aws_route53_zone.zone.id}"
 }
 
 module "chef_ha" {
   source = "./chef_ha"
 
-  vpc_id                    = "${module.vpc.vpc_id}"
+  account_id                = "${data.aws_caller_identity.current.account_id}"
   ami                       = "${data.aws_ami.ubuntu.id}"
   ami_user                  = "${var.ami_user}"
+  az_subnet_ids             = "${module.vpc.public_subnets}"
+  backend_security_group_id = "${module.security_groups.backend_security_group_id}"
   default_tags              = "${var.default_tags}"
+  deployment_name           = "${local.deployment_name}"
+  domain                    = "${var.domain}"
+  https_security_group_id   = "${module.security_groups.https_security_group_id}"
   instance                  = "${var.instance}"
   instance_keys             = "${var.instance_keys}"
-  domain                    = "${var.domain}"
-  zone_id                   = "${data.aws_route53_zone.zone.id}"
-  az_subnet_ids             = "${module.vpc.public_subnets}"
-  account_id                = "${data.aws_caller_identity.current.account_id}"
   ssh_security_group_id     = "${module.security_groups.ssh_security_group_id}"
-  https_security_group_id   = "${module.security_groups.https_security_group_id}"
-  backend_security_group_id = "${module.security_groups.backend_security_group_id}"
-  deployment_name           = "${local.deployment_name}"
+  vpc_id                    = "${module.vpc.vpc_id}"
+  zone_id                   = "${data.aws_route53_zone.zone.id}"
 }
 
 module "chef_clients" {
@@ -127,26 +128,26 @@ module "chef_clients" {
 
   ami                                      = "${data.aws_ami.ubuntu.id}"
   ami_user                                 = "${var.ami_user}"
-  default_tags                             = "${var.default_tags}"
-  instance                                 = "${var.instance}"
-  instance_keys                            = "${var.instance_keys}"
-  instance_hostname                        = "${var.instance_hostname}"
-  domain                                   = "${var.domain}"
-  zone_id                                  = "${data.aws_route53_zone.zone.id}"
   az_subnet_ids                            = "${module.vpc.public_subnets}"
-  ssh_security_group_id                    = "${module.security_groups.ssh_security_group_id}"
-  https_security_group_id                  = "${module.security_groups.https_security_group_id}"
-  validator_key_path                       = "${var.validator_key_path}"
-  provider                                 = "${var.provider}"
   chef_server_fqdn                         = "${module.chef_server.chef_server_fqdn}"
-  unattended_registration_instance_profile = "${module.chef_unattended_registration.instance_profile}"
+  default_tags                             = "${var.default_tags}"
+  domain                                   = "${var.domain}"
+  https_security_group_id                  = "${module.security_groups.https_security_group_id}"
+  instance                                 = "${var.instance}"
+  instance_hostname                        = "${var.instance_hostname}"
+  instance_keys                            = "${var.instance_keys}"
+  provider                                 = "${var.provider}"
   r53_ttl                                  = "${var.r53_ttl}"
+  ssh_security_group_id                    = "${module.security_groups.ssh_security_group_id}"
+  unattended_registration_instance_profile = "${module.chef_unattended_registration.instance_profile}"
+  validator_key_path                       = "${var.validator_key_path}"
+  zone_id                                  = "${data.aws_route53_zone.zone.id}"
 }
 
 module "chef_unattended_registration" {
   source = "./chef_unattended_registration"
 
-  provider           = "${var.provider}"
   account_id         = "${data.aws_caller_identity.current.account_id}"
+  provider           = "${var.provider}"
   validator_key_path = "${var.validator_key_path}"
 }
