@@ -132,6 +132,7 @@ module "chef_alb" {
   domain                  = "${var.domain}"
   frontend_hostname       = "${var.frontend_hostname}"
   https_security_group_id = "${module.security_groups.https_security_group_id}"
+  log_bucket              = "${var.log_bucket}"
   target_ids              = "${list(element(concat(module.chef_ha.frontend_ids, module.chef_server.chef_server_id), 0))}"
   vpc_id                  = "${module.vpc.vpc_id}"
   zone_id                 = "${data.aws_route53_zone.zone.id}"

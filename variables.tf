@@ -168,3 +168,8 @@ variable "chef_clients" {
     count = 0
   }
 }
+
+variable "log_bucket" {
+  description = "Chef HA Log bucket"
+  default     = "chef-ha-logs"
+}
