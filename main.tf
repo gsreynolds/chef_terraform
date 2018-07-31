@@ -104,12 +104,16 @@ module "chef_server" {
 module "chef_ha" {
   source = "./chef_ha"
 
-  # ami          = "${data.aws_ami.ubuntu.id}"
-  # default_tags = "${var.default_tags}"
-  # instance_keys = "${var.instance_keys}"
-  # domain        = "${var.domain}"
-  # zone_id       = "${data.aws_route53_zone.zone.id}"
-  # az_subnets    = "${var.az_subnets}"
+  vpc_id        = "${module.vpc.vpc_id}"
+  ami           = "${data.aws_ami.ubuntu.id}"
+  ami_user      = "${var.ami_user}"
+  default_tags  = "${var.default_tags}"
+  instance      = "${var.instance}"
+  instance_keys = "${var.instance_keys}"
+  domain        = "${var.domain}"
+  zone_id       = "${data.aws_route53_zone.zone.id}"
+  az_subnet_ids = "${module.vpc.public_subnets}"
+  account_id    = "${data.aws_caller_identity.current.account_id}"
 }
 
 module "chef_clients" {
