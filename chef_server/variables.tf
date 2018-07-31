@@ -1,6 +1,12 @@
 variable "deployment_name" {}
 variable "ami" {}
-variable "ami_user" {}
+
+variable "ami_user" {
+  type        = "string"
+  description = "Default username"
+
+  default = "ubuntu"
+}
 
 variable "default_tags" {
   type        = "map"
