@@ -5,7 +5,7 @@ locals {
 # Instances
 
 resource "aws_instance" "backends" {
-  count                       = "${var.chef_backend["count"]}"
+  count                       = "${var.create_chef_ha ? var.chef_backend["count"] : 0}"
   ami                         = "${var.ami}"
   ebs_optimized               = "${var.instance["ebs_optimized"]}"
   instance_type               = "${var.instance["backend_flavor"]}"
@@ -49,7 +49,7 @@ resource "aws_instance" "backends" {
 
 resource "aws_eip" "backends" {
   vpc      = true
-  count    = "${var.chef_backend["count"]}"
+  count    = "${var.create_chef_ha ? var.chef_backend["count"] : 0}"
   instance = "${element(aws_instance.backends.*.id, count.index)}"
 
   # depends_on = ["aws_internet_gateway.main"]
@@ -63,7 +63,7 @@ resource "aws_eip" "backends" {
 }
 
 resource "aws_instance" "frontends" {
-  count                       = "${var.chef_frontend["count"]}"
+  count                       = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
   ami                         = "${var.ami}"
   ebs_optimized               = "${var.instance["ebs_optimized"]}"
   instance_type               = "${var.instance["frontend_flavor"]}"
@@ -105,7 +105,7 @@ resource "aws_instance" "frontends" {
 
 resource "aws_eip" "frontends" {
   vpc      = true
-  count    = "${var.chef_frontend["count"]}"
+  count    = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
   instance = "${element(aws_instance.frontends.*.id, count.index)}"
 
   # depends_on = ["aws_internet_gateway.main"]
@@ -118,14 +118,9 @@ resource "aws_eip" "frontends" {
   )}"
 }
 
-data "aws_route53_zone" "zone" {
-  name         = "${var.domain}."
-  private_zone = false
-}
-
 resource "aws_route53_record" "backends" {
-  count   = "${var.chef_backend["count"]}"
-  zone_id = "${zone_id}"
+  count   = "${var.create_chef_ha ? var.chef_backend["count"] : 0}"
+  zone_id = "${var.zone_id}"
   name    = "${element(aws_instance.backends.*.tags.Name, count.index)}"
   type    = "A"
   ttl     = "${var.r53_ttl}"
@@ -133,8 +128,8 @@ resource "aws_route53_record" "backends" {
 }
 
 resource "aws_route53_record" "frontend" {
-  count   = "${var.chef_frontend["count"]}"
-  zone_id = "${zone_id}"
+  count   = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
+  zone_id = "${var.zone_id}"
   name    = "${element(aws_instance.frontends.*.tags.Name, count.index)}"
   type    = "A"
   ttl     = "${var.r53_ttl}"
@@ -142,7 +137,7 @@ resource "aws_route53_record" "frontend" {
 }
 
 resource "aws_route53_record" "alb" {
-  zone_id = "${zone_id}"
+  zone_id = "${var.zone_id}"
   name    = "${local.alb_fqdn}"
   type    = "CNAME"
   ttl     = "${var.r53_ttl}"
@@ -150,7 +145,7 @@ resource "aws_route53_record" "alb" {
 }
 
 resource "aws_route53_health_check" "frontend" {
-  count             = "${var.chef_frontend["count"]}"
+  count             = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
   fqdn              = "${element(aws_instance.frontends.*.tags.Name, count.index)}"
   port              = 443
   type              = "HTTPS"
@@ -167,6 +162,7 @@ resource "aws_route53_health_check" "frontend" {
 }
 
 resource "aws_s3_bucket" "logs" {
+  count  = "${var.create_chef_ha ? 1 : 0}"
   bucket = "${var.log_bucket}"
   acl    = "private"
 
@@ -179,6 +175,7 @@ resource "aws_s3_bucket" "logs" {
 }
 
 resource "aws_s3_bucket_policy" "alb_logs" {
+  count  = "${var.create_chef_ha ? 1 : 0}"
   bucket = "${aws_s3_bucket.logs.id}"
 
   policy = <<POLICY
@@ -201,6 +198,7 @@ POLICY
 }
 
 resource "aws_acm_certificate" "alb" {
+  count             = "${var.create_chef_ha ? 1 : 0}"
   domain_name       = "${local.alb_fqdn}"
   validation_method = "DNS"
 
@@ -213,14 +211,16 @@ resource "aws_acm_certificate" "alb" {
 }
 
 resource "aws_route53_record" "cert_validation" {
+  count   = "${var.create_chef_ha ? 1 : 0}"
   name    = "${aws_acm_certificate.alb.domain_validation_options.0.resource_record_name}"
   type    = "${aws_acm_certificate.alb.domain_validation_options.0.resource_record_type}"
-  zone_id = "${zone_id}"
+  zone_id = "${var.zone_id}"
   records = ["${aws_acm_certificate.alb.domain_validation_options.0.resource_record_value}"]
   ttl     = 60
 }
 
 resource "aws_acm_certificate_validation" "cert" {
+  count                   = "${var.create_chef_ha ? 1 : 0}"
   certificate_arn         = "${aws_acm_certificate.alb.arn}"
   validation_record_fqdns = ["${aws_route53_record.cert_validation.fqdn}"]
 }

@@ -1,5 +1,5 @@
 resource "aws_instance" "chef_server" {
-  count                       = 1
+  count                       = "${var.create_chef_ha ? 0 : 1}"
   ami                         = "${var.ami}"
   ebs_optimized               = "${var.instance["ebs_optimized"]}"
   instance_type               = "${var.instance["chef_server_flavor"]}"
@@ -49,7 +49,7 @@ resource "aws_instance" "chef_server" {
 
 resource "aws_eip" "chef_server" {
   vpc      = true
-  count    = 1
+  count    = "${var.create_chef_ha ? 0 : 1}"
   instance = "${element(aws_instance.chef_server.*.id, count.index)}"
 
   # depends_on = ["aws_internet_gateway.main"]
@@ -63,7 +63,7 @@ resource "aws_eip" "chef_server" {
 }
 
 resource "aws_route53_record" "chef_server" {
-  count   = 1
+  count   = "${var.create_chef_ha ? 0 : 1}"
   zone_id = "${var.zone_id}"
   name    = "${element(aws_instance.chef_server.*.tags.Name, count.index)}"
   type    = "A"
@@ -72,7 +72,7 @@ resource "aws_route53_record" "chef_server" {
 }
 
 resource "aws_route53_health_check" "chef_server" {
-  count             = 1
+  count             = "${var.create_chef_ha ? 0 : 1}"
   fqdn              = "${element(aws_instance.chef_server.*.tags.Name, count.index)}"
   port              = 443
   type              = "HTTPS"

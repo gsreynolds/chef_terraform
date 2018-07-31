@@ -13,6 +13,11 @@ variable "application_name" {
   default     = "Chef Automate"
 }
 
+variable "create_chef_ha" {
+  description = "Create Chef Server in HA topology if true, standalone topology if false"
+  default     = false
+}
+
 variable "default_tags" {
   type        = "map"
   description = "Default resource tags"

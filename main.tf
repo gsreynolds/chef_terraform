@@ -80,6 +80,8 @@ module "chef_automate2" {
 module "chef_server" {
   source = "./chef_server"
 
+  create_chef_ha = "${var.create_chef_ha}"
+
   ami                     = "${data.aws_ami.ubuntu.id}"
   ami_user                = "${var.ami_user}"
   default_tags            = "${var.default_tags}"
@@ -97,6 +99,8 @@ module "chef_server" {
 
 module "chef_ha" {
   source = "./chef_ha"
+
+  create_chef_ha = "${var.create_chef_ha}"
 
   account_id                = "${data.aws_caller_identity.current.account_id}"
   ami                       = "${data.aws_ami.ubuntu.id}"
