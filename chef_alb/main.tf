@@ -88,14 +88,13 @@ module "alb" {
 
   https_listeners       = "${list(map("certificate_arn", "${aws_acm_certificate.alb.arn}", "port", 443, "ssl_policy", "ELBSecurityPolicy-TLS-1-2-2017-01"))}"
   https_listeners_count = "1"
-  target_groups         = "${list(map("name", "chef_https", "backend_protocol", "HTTPS", "backend_port", "443"))}"
+  target_groups         = "${list(map("name", "chef-https", "backend_protocol", "HTTPS", "backend_port", "443"))}"
   target_groups_count   = "1"
 }
 
-resource "aws_lb_target_group_attachment" "chef_https" {
+resource "aws_lb_target_group_attachment" "chef-https" {
   count            = "${var.chef_target_count}"
   target_group_arn = "${element(module.alb.target_group_arns, count.index)}"
-  target_id        = "${var.target_ids}"
   target_id        = "${element(var.target_ids, count.index)}"
   port             = 443
 }
