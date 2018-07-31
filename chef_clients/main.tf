@@ -1,5 +1,5 @@
 resource "aws_instance" "chef_clients" {
-  count = 3
+  count = "${var.count}"
 
   # depends_on = ["aws_instance.chef_server"]
   ami = "${var.ami}"
@@ -69,7 +69,7 @@ resource "aws_instance" "chef_clients" {
 }
 
 resource "aws_route53_record" "chef_clients" {
-  count   = 3
+  count   = "${var.count}"
   zone_id = "${var.zone_id}"
   name    = "${element(aws_instance.chef_clients.*.tags.Name, count.index)}"
   type    = "A"

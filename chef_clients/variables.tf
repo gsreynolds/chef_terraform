@@ -1,3 +1,7 @@
+variable "count" {
+  default = 0
+}
+
 variable "ami" {}
 
 variable "ami_user" {

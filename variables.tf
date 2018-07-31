@@ -159,3 +159,12 @@ variable "chef_frontend" {
     version = "12.17.33"
   }
 }
+
+variable "chef_clients" {
+  type        = "map"
+  description = "Chef Client settings"
+
+  default = {
+    count = 0
+  }
+}

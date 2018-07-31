@@ -5,6 +5,10 @@ provider = {
 
 create_chef_ha = false
 
+chef_clients = {
+  count = 3
+}
+
 default_tags = {
   X-Dept        = ""
   X-Contact     = ""

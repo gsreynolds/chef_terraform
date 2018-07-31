@@ -41,10 +41,6 @@ resource "aws_instance" "chef_server" {
       "sudo chef-server-ctl reconfigure",
     ]
   }
-
-  provisioner "local-exec" {
-    command = "echo '\n\n-= COMPLETE CHEF SERVER MANUAL CONFIG `touch /tmp/ididit`; I WILL WAIT HERE =-\n\n'; while ! test -f /tmp/ididit; do sleep 30; done"
-  }
 }
 
 resource "aws_eip" "chef_server" {

@@ -144,6 +144,7 @@ module "chef_clients" {
   ami_user                                 = "${var.ami_user}"
   az_subnet_ids                            = "${module.vpc.public_subnets}"
   chef_server_fqdn                         = "${module.chef_alb.chef_alb_fqdn}"
+  count                                    = "${var.chef_clients["count"]}"
   default_tags                             = "${var.default_tags}"
   domain                                   = "${var.domain}"
   https_security_group_id                  = "${module.security_groups.https_security_group_id}"
