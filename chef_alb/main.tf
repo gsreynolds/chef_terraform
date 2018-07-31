@@ -94,7 +94,7 @@ module "alb" {
 
 resource "aws_lb_target_group_attachment" "chef-https" {
   count            = "${var.chef_target_count}"
-  target_group_arn = "${element(module.alb.target_group_arns, count.index)}"
+  target_group_arn = "${element(module.alb.target_group_arns, 0)}"
   target_id        = "${element(var.target_ids, count.index)}"
   port             = 443
 }
