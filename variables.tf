@@ -71,19 +71,32 @@ variable "instance" {
     automate_server_size   = 40
     automate_server_term   = true
     automate_server_type   = "gp2"
-    ebs_optimized          = true
-    chef_server_flavor     = "m5.large"
-    chef_server_iops       = 0
-    chef_server_public     = true
-    chef_server_size       = 40
-    chef_server_term       = true
-    chef_server_type       = "gp2"
+    backend_flavor         = "m5.large"
+    backend_iops           = 0
+    backend_public         = true
+    backend_size           = 40
+    backend_term           = true
+    backend_type           = "gp2"
     chef_client_flavor     = "t2.medium"
     chef_client_iops       = 0
     chef_client_public     = true
     chef_client_size       = 10
     chef_client_term       = true
     chef_client_type       = "gp2"
+    chef_server_flavor     = "m5.large"
+    chef_server_iops       = 0
+    chef_server_public     = true
+    chef_server_size       = 40
+    chef_server_term       = true
+    chef_server_type       = "gp2"
+    ebs_optimized          = true
+    ebs_optimized          = true
+    frontend_flavor        = "m5.large"
+    frontend_iops          = 0
+    frontend_public        = true
+    frontend_size          = 40
+    frontend_term          = true
+    frontend_type          = "gp2"
   }
 }
 
@@ -125,4 +138,24 @@ variable "validator_key_path" {
 variable "frontend_hostname" {
   description = "Frontend ALB hostname name"
   default     = "chef"
+}
+
+variable "chef_backend" {
+  type        = "map"
+  description = "Chef backend settings"
+
+  default = {
+    count   = 3
+    version = "2.0.1"
+  }
+}
+
+variable "chef_frontend" {
+  type        = "map"
+  description = "Chef frontend settings"
+
+  default = {
+    count   = 3
+    version = "12.17.33"
+  }
 }

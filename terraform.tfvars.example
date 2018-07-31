@@ -3,6 +3,8 @@ provider = {
   profile = ""
 }
 
+create_chef_ha = false
+
 default_tags = {
   X-Dept        = ""
   X-Contact     = ""

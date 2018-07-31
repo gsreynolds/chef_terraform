@@ -144,7 +144,7 @@ resource "aws_route53_health_check" "frontend" {
   tags = "${merge(
     var.default_tags,
     map(
-      "Name", "${local.deployment_name} ${element(aws_instance.frontends.*.tags.Name, count.index)} Health Check"
+      "Name", "${var.deployment_name} ${element(aws_instance.frontends.*.tags.Name, count.index)} Health Check"
     )
   )}"
 }
