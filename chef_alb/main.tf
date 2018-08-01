@@ -75,7 +75,7 @@ module "alb" {
   security_groups     = ["${var.https_security_group_id}"]
   log_bucket_name     = "${aws_s3_bucket.logs.bucket}"
   log_location_prefix = "alb"
-  subnets             = ["${var.az_subnet_ids}"]
+  subnets             = ["${var.subnets}"]
 
   tags = "${merge(
     var.default_tags,

@@ -126,7 +126,7 @@ module "chef_alb" {
   source = "./chef_alb"
 
   account_id              = "${data.aws_caller_identity.current.account_id}"
-  az_subnet_ids           = "${module.vpc.public_subnets}"
+  subnets                 = "${module.vpc.public_subnets}"
   chef_target_count       = "${var.create_chef_ha ? var.chef_frontend["count"] : 1}"
   deployment_name         = "${local.deployment_name}"
   domain                  = "${var.domain}"

@@ -52,8 +52,8 @@ variable "domain" {
   default     = ""
 }
 
-variable "az_subnet_ids" {
+variable "subnets" {
   type        = "list"
-  description = "Availability zone subnet IDs"
+  description = "Subnet IDs"
   default     = []
 }
