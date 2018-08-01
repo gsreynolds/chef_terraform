@@ -1,10 +1,17 @@
 # Security Groups
 ## SSH
+module "ssh_sg" {
+  source = "terraform-aws-modules/security-group/aws"
 
-resource "aws_security_group" "ssh" {
-  name        = "${var.deployment_name} SSH SG"
-  description = "${var.deployment_name} SSH SG"
+  name        = "ssh"
+  description = "Security group for SSH-in and egress"
   vpc_id      = "${var.vpc_id}"
+
+  ingress_cidr_blocks = ["${var.ssh_whitelist_cidrs}"]
+  ingress_rules       = ["ssh-tcp"]
+
+  egress_cidr_blocks = ["0.0.0.0/0"]
+  egress_rules       = ["all-all"]
 
   tags = "${merge(
     var.default_tags,
@@ -14,107 +21,71 @@ resource "aws_security_group" "ssh" {
   )}"
 }
 
-resource "aws_security_group_rule" "restrict_ssh_ingress" {
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  cidr_blocks       = "${var.ssh_whitelist_cidrs}"
-  security_group_id = "${aws_security_group.ssh.id}"
-}
+## Chef Automate & Chef Server/Chef HA Frontends
+module "https_all_sg" {
+  source = "terraform-aws-modules/security-group/aws"
 
-resource "aws_security_group_rule" "allow_egress" {
-  type        = "egress"
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1"
-  cidr_blocks = ["0.0.0.0/0"]
-
-  security_group_id = "${aws_security_group.ssh.id}"
-}
-
-## Chef Automate & Chef Server
-resource "aws_security_group" "https" {
-  name        = "${var.deployment_name} HTTPS SG"
-  description = "${var.deployment_name} HTTPS SG"
+  name        = "https"
+  description = "Security group for HTTPS-in from all"
   vpc_id      = "${var.vpc_id}"
+
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_rules       = ["https-443-tcp"]
 
   tags = "${merge(
     var.default_tags,
     map(
-      "Name", "${var.deployment_name} HTTPS SG"
+      "Name", "${var.deployment_name} HTTPS-all SG"
     )
   )}"
 }
 
-resource "aws_security_group_rule" "allow_https" {
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = "${aws_security_group.https.id}"
-}
-
 ## Backend
-resource "aws_security_group" "backend" {
-  name        = "${var.deployment_name} Backend SG"
-  description = "${var.deployment_name} Backend SG"
+module "backend_sg" {
+  source = "terraform-aws-modules/security-group/aws"
+
+  name        = "backend"
+  description = "Security group for Chef HA backend"
   vpc_id      = "${var.vpc_id}"
 
-  tags = "${merge(
+  computed_ingress_with_source_security_group_id = [
+    {
+      # permit all to all from other backends
+      rule                     = "all-all"
+      source_security_group_id = "${module.backend_sg.this_security_group_id}"
+    },
+    {
+      ## etcd from frontends
+      from_port                = 2379
+      to_port                  = 2379
+      protocol                 = "tcp"
+      source_security_group_id = "${module.https_all_sg.this_security_group_id}"
+    },
+    {
+      ## postgresql from frontends
+      rule                     = "postgresql-tcp"
+      source_security_group_id = "${module.https_all_sg.this_security_group_id}"
+    },
+    {
+      ## leaderl from frontends
+      from_port                = 7331
+      to_port                  = 7331
+      protocol                 = "tcp"
+      source_security_group_id = "${module.https_all_sg.this_security_group_id}"
+    },
+    {
+      ## elasticsearch from frontends
+      rule                     = "elasticsearch-rest-tcp"
+      source_security_group_id = "${module.https_all_sg.this_security_group_id}"
+    },
+  ]
+
+  number_of_computed_ingress_with_source_security_group_id = 5
+
+    tags = "${merge(
     var.default_tags,
     map(
       "Name", "${var.deployment_name} Backend SG"
     )
   )}"
-}
-
-resource "aws_security_group_rule" "backend_sg_all" {
-  type                     = "ingress"
-  from_port                = 0
-  to_port                  = 0
-  protocol                 = "-1"
-  source_security_group_id = "${aws_security_group.backend.id}"
-  security_group_id        = "${aws_security_group.backend.id}"
-}
-
-## etcd
-resource "aws_security_group_rule" "backend_2379_tcp" {
-  type                     = "ingress"
-  from_port                = 2379
-  to_port                  = 2379
-  protocol                 = "tcp"
-  source_security_group_id = "${aws_security_group.https.id}"
-  security_group_id        = "${aws_security_group.backend.id}"
-}
-
-## postgresql
-resource "aws_security_group_rule" "backend_5432_tcp" {
-  type                     = "ingress"
-  from_port                = 5432
-  to_port                  = 5432
-  protocol                 = "tcp"
-  source_security_group_id = "${aws_security_group.https.id}"
-  security_group_id        = "${aws_security_group.backend.id}"
-}
-
-## leaderl
-resource "aws_security_group_rule" "backend_7331_tcp" {
-  type                     = "ingress"
-  from_port                = 7331
-  to_port                  = 7331
-  protocol                 = "tcp"
-  source_security_group_id = "${aws_security_group.https.id}"
-  security_group_id        = "${aws_security_group.backend.id}"
-}
-
-## elasticsearch
-resource "aws_security_group_rule" "backend_9200_tcp" {
-  type                     = "ingress"
-  from_port                = 9200
-  to_port                  = 9200
-  protocol                 = "tcp"
-  source_security_group_id = "${aws_security_group.https.id}"
-  security_group_id        = "${aws_security_group.backend.id}"
 }
