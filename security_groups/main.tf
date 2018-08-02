@@ -47,6 +47,8 @@ module "https_all_sg" {
 module "backend_sg" {
   source = "terraform-aws-modules/security-group/aws"
 
+  create = "${var.create_chef_ha ? true : false}"
+
   name        = "backend"
   description = "Security group for Chef HA backend"
   vpc_id      = "${var.vpc_id}"

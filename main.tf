@@ -51,6 +51,8 @@ module "vpc" {
 module "security_groups" {
   source = "./security_groups"
 
+  create_chef_ha = "${var.create_chef_ha}"
+
   account_id          = "${data.aws_caller_identity.current.account_id}"
   default_tags        = "${var.default_tags}"
   deployment_name     = "${local.deployment_name}"
