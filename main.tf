@@ -120,6 +120,7 @@ module "chef_ha" {
   instance_hostname         = "${var.instance_hostname}"
   instance_keys             = "${var.instance_keys}"
   ssh_security_group_id     = "${module.security_groups.ssh_security_group_id}"
+  vpc                       = "${var.vpc}"
   vpc_id                    = "${module.vpc.vpc_id}"
   zone_id                   = "${data.aws_route53_zone.zone.id}"
 }

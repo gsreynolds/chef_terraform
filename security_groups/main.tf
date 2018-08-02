@@ -87,7 +87,7 @@ module "backend_sg" {
 
   number_of_computed_ingress_with_source_security_group_id = 5
 
-    tags = "${merge(
+  tags = "${merge(
     var.default_tags,
     map(
       "Name", "${var.deployment_name} Backend SG"
