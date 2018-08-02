@@ -16,7 +16,7 @@ resource "aws_instance" "chef_clients" {
   tags = "${merge(
     var.default_tags,
     map(
-      "Name", "${format("%s%02d.%s", var.instance_hostname["chef_client"], count.index + 1, var.domain)}"
+      "Name", "${format("%s%02d.%s", var.hostnames["chef_client"], count.index + 1, var.domain)}"
     )
   )}"
 

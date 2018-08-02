@@ -100,7 +100,7 @@ variable "instance" {
   }
 }
 
-variable "instance_hostname" {
+variable "hostnames" {
   type        = "map"
   description = "Instance hostname prefix"
 
@@ -133,11 +133,6 @@ variable "validator_key_path" {
   description = "Path to org validator key in SSM"
 
   default = "/chef/test/"
-}
-
-variable "frontend_hostname" {
-  description = "Frontend ALB hostname name"
-  default     = "chef"
 }
 
 variable "chef_backend" {

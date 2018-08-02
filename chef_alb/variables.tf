@@ -16,8 +16,8 @@ variable "elb_account_id" {
 }
 
 variable "log_bucket" {
-  description = "Chef HA Log bucket"
-  default     = "chef-ha-logs"
+  description = "Chef ALB og bucket"
+  default     = "chef-alb-logs"
 }
 
 variable "r53_ttl" {
@@ -38,9 +38,14 @@ variable "target_ids" {
   default = []
 }
 
-variable "frontend_hostname" {
-  description = "Frontend ALB hostname name"
-  default     = "chef"
+variable "hostnames" {
+  type        = "map"
+  description = "Instance hostname prefix"
+
+  default = {
+    chef_server = "chef"
+    automate_server = "automate"
+  }
 }
 
 variable "chef_target_count" {

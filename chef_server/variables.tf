@@ -42,7 +42,7 @@ variable "instance" {
   }
 }
 
-variable "instance_hostname" {
+variable "hostnames" {
   type        = "map"
   description = "Instance hostname prefix"
 

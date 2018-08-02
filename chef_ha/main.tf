@@ -13,7 +13,7 @@ resource "aws_instance" "backends" {
   tags = "${merge(
     var.default_tags,
     map(
-      "Name", "${format("%s%02d.%s", var.instance_hostname["backend"], count.index + 1, var.domain)}"
+      "Name", "${format("%s%02d.%s", var.hostnames["backend"], count.index + 1, var.domain)}"
     )
   )}"
 
@@ -53,7 +53,7 @@ resource "aws_eip" "backends" {
   tags = "${merge(
     var.default_tags,
     map(
-      "Name", "${format("%s%02d.%s", var.instance_hostname["backend"], count.index + 1, var.domain)}"
+      "Name", "${format("%s%02d.%s", var.hostnames["backend"], count.index + 1, var.domain)}"
     )
   )}"
 }
@@ -71,7 +71,7 @@ resource "aws_instance" "frontends" {
   tags = "${merge(
     var.default_tags,
     map(
-      "Name", "${format("%s%02d.%s", var.instance_hostname["frontend"], count.index + 1, var.domain)}"
+      "Name", "${format("%s%02d.%s", var.hostnames["frontend"], count.index + 1, var.domain)}"
     )
   )}"
 
@@ -109,7 +109,7 @@ resource "aws_eip" "frontends" {
   tags = "${merge(
     var.default_tags,
     map(
-      "Name", "${format("%s%02d.%s", var.instance_hostname["frontend"], count.index + 1, var.domain)}"
+      "Name", "${format("%s%02d.%s", var.hostnames["frontend"], count.index + 1, var.domain)}"
     )
   )}"
 }

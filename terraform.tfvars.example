@@ -1,6 +1,6 @@
 provider = {
   region  = "eu-west-1"
-  profile = ""
+  profile = "profilename"
 }
 
 create_chef_ha = false
@@ -31,14 +31,17 @@ az_subnets = {
 
 ssh_whitelist_cidrs = ["0.0.0.0/0"]
 
-domain = ""
+domain = "example.com"
 
-instance_hostname = {
-  chef_server     = ""
-  automate_server = ""
+hostnames = {
+  chef_server     = "chef"
+  automate_server = "automate"
+  chef_client     = "node"
+  backend         = "chef-be"
+  frontend        = "chef-fe"
 }
 
 instance_keys = {
-  key_name = ""
-  key_file = ""
+  key_name = "ssh-key"
+  key_file = "~/.ssh/ssh-key"
 }

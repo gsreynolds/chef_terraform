@@ -11,7 +11,7 @@ resource "aws_instance" "automate_server" {
   tags = "${merge(
     var.default_tags,
     map(
-      "Name", "${format("%s%02d.%s", var.instance_hostname["automate_server"], count.index + 1, var.domain)}"
+      "Name", "${format("%s%02d.%s", var.hostnames["automate_server"], count.index + 1, var.domain)}"
     )
   )}"
 
@@ -64,7 +64,7 @@ resource "aws_eip" "automate_server" {
   tags = "${merge(
     var.default_tags,
     map(
-      "Name", "${format("%s%02d.%s", var.instance_hostname["automate_server"], count.index + 1, var.domain)}"
+      "Name", "${format("%s%02d.%s", var.hostnames["automate_server"], count.index + 1, var.domain)}"
     )
   )}"
 }

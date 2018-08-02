@@ -1,5 +1,6 @@
 locals {
-  alb_fqdn = "${var.frontend_hostname}.${var.domain}"
+  chef_alb_fqdn = "${var.hostnames["chef_server"]}.${var.domain}"
+  automate_alb_fqdn = "${var.hostnames["automate_server"]}.${var.domain}"
 }
 
 resource "aws_s3_bucket" "logs" {
@@ -37,7 +38,7 @@ POLICY
 }
 
 resource "aws_acm_certificate" "alb" {
-  domain_name       = "${local.alb_fqdn}"
+  domain_name       = "${local.chef_alb_fqdn}"
   validation_method = "DNS"
 
   tags = "${merge(
@@ -63,7 +64,7 @@ resource "aws_acm_certificate_validation" "cert" {
 
 resource "aws_route53_record" "alb" {
   zone_id = "${var.zone_id}"
-  name    = "${local.alb_fqdn}"
+  name    = "${local.chef_alb_fqdn}"
   type    = "CNAME"
   ttl     = "${var.r53_ttl}"
   records = ["${module.alb.dns_name}"]
@@ -71,7 +72,7 @@ resource "aws_route53_record" "alb" {
 
 module "alb" {
   source              = "terraform-aws-modules/alb/aws"
-  load_balancer_name  = "${replace(local.alb_fqdn,".","-")}-alb"
+  load_balancer_name  = "${replace(local.chef_alb_fqdn,".","-")}-alb"
   security_groups     = ["${var.https_security_group_id}"]
   log_bucket_name     = "${aws_s3_bucket.logs.bucket}"
   log_location_prefix = "alb"
