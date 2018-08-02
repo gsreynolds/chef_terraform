@@ -32,7 +32,17 @@ variable "account_id" {}
 variable "vpc_id" {}
 variable "https_security_group_id" {}
 
-variable "target_ids" {
+variable "chef_target_ids" {
+  type = "list"
+
+  default = []
+}
+
+variable "chef_target_count" {
+  default = "1"
+}
+
+variable "automate_target_ids" {
   type = "list"
 
   default = []
@@ -43,13 +53,9 @@ variable "hostnames" {
   description = "Instance hostname prefix"
 
   default = {
-    chef_server = "chef"
+    chef_server     = "chef"
     automate_server = "automate"
   }
-}
-
-variable "chef_target_count" {
-  default = "1"
 }
 
 variable "domain" {

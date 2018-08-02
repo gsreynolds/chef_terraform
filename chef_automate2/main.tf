@@ -44,7 +44,7 @@ resource "aws_instance" "automate_server" {
       "echo vm.max_map_count=262144 | sudo tee -a /etc/sysctl.conf",
       "echo vm.dirty_expire_centisecs=20000 | sudo tee -a /etc/sysctl.conf",
       "sudo sysctl -p /etc/sysctl.conf",
-      "sudo chef-automate init-config",
+      "sudo chef-automate init-config --fqdn ${var.automate_fqdn}",
       "sudo chef-automate deploy --channel current --upgrade-strategy none --accept-terms-and-mlsa config.toml",
 
       # "chef-automate license apply $(cat automate.license)",
