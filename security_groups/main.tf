@@ -26,11 +26,14 @@ module "https_all_sg" {
   source = "terraform-aws-modules/security-group/aws"
 
   name        = "https"
-  description = "Security group for HTTPS-in from all"
+  description = "Security group for HTTPS-in from all to all"
   vpc_id      = "${var.vpc_id}"
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["https-443-tcp"]
+
+  egress_cidr_blocks = ["0.0.0.0/0"]
+  egress_rules       = ["all-all"]
 
   tags = "${merge(
     var.default_tags,
