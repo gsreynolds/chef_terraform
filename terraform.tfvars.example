@@ -3,19 +3,21 @@ provider = {
   profile = "profilename"
 }
 
+application_name = "My Chef Automate"
+
 create_chef_ha = false
 
 chef_clients = {
-  count = 3
+  count = 0
 }
 
 default_tags = {
-  X-Dept        = ""
-  X-Contact     = ""
-  X-Project     = ""
+  X-Dept        = "My Dept"
+  X-Contact     = "My Name"
+  X-Project     = "Demo"
   X-Production  = false
   X-TTL         = 168
-  X-Environment = ""
+  X-Environment = "Test"
   X-Application = "Chef Automate"
 }
 
@@ -45,3 +47,11 @@ instance_keys = {
   key_name = "ssh-key"
   key_file = "~/.ssh/ssh-key"
 }
+
+chef_frontend = {
+  count = 3
+}
+
+log_bucket = "my-chef-logs"
+
+validator_key_path = "/my_chef/test/"
