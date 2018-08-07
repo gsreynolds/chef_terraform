@@ -143,6 +143,28 @@ module "chef_alb" {
   zone_id                 = "${data.aws_route53_zone.zone.id}"
 }
 
+module "chef_unattended_registration" {
+  source = "./chef_unattended_registration"
+
+  account_id         = "${data.aws_caller_identity.current.account_id}"
+  provider           = "${var.provider}"
+  validator_key_path = "${var.validator_key_path}"
+}
+
+module "test_org_setup" {
+  source = "./test_org_setup"
+
+  # create_chef_ha = "${var.create_chef_ha}"
+
+  ami_user                  = "${var.ami_user}"
+  automate_fqdn             = "${module.chef_alb.automate_alb_fqdn}"
+  automate_server_public_ip = "${element(module.chef_automate2.chef_automate_public_ip, 0)}"
+  chef_server_ids           = "${concat(module.chef_ha.frontend_ids, module.chef_server.chef_server_id)}"
+  chef_server_public_ip     = "${element(module.chef_server.chef_server_public_ip, 0)}"
+  instance_keys             = "${var.instance_keys}"
+  validator_key_path        = "${var.validator_key_path}"
+}
+
 module "chef_clients" {
   source = "./chef_clients"
 
@@ -163,12 +185,4 @@ module "chef_clients" {
   unattended_registration_instance_profile = "${module.chef_unattended_registration.instance_profile}"
   validator_key_path                       = "${var.validator_key_path}"
   zone_id                                  = "${data.aws_route53_zone.zone.id}"
-}
-
-module "chef_unattended_registration" {
-  source = "./chef_unattended_registration"
-
-  account_id         = "${data.aws_caller_identity.current.account_id}"
-  provider           = "${var.provider}"
-  validator_key_path = "${var.validator_key_path}"
 }

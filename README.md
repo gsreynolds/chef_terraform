@@ -27,7 +27,7 @@ Currently only installing the packages and doing basic configuration - the rest 
   * `sudo chef-server-ctl org-create test TestOrg`
   * Copy the generated validator key for configuring unattended node registration
 * Create a Chef Server user and associate it with the test org
-  * `sudo chef-server-ctl user-create -p test admin Admin User admin@example.com -o test`
+  * `sudo chef-server-ctl user-create admin Admin User admin@example.com -o test -p`
   * Copy the generated user client key for configuring knife on your workstation
 * Grant the user Server Admin permissions (optional)
   * `sudo chef-server-ctl grant-server-admin-permissions admin`

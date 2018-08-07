@@ -10,3 +10,6 @@ crash.log
 
 terraform.tfvars
 *.plan
+
+# Ignore .chef directories
+**/.chef/*
