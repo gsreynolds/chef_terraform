@@ -111,25 +111,27 @@ module "alb" {
 
   https_listeners       = "${list(map("certificate_arn", "${aws_acm_certificate.alb.arn}", "port", 443, "ssl_policy", "ELBSecurityPolicy-TLS-1-2-2017-01"))}"
   https_listeners_count = "1"
-  target_groups         = "${list(map("name", "chef-https", "backend_protocol", "HTTPS", "backend_port", "443"),map("name", "automate-https", "backend_protocol", "HTTPS", "backend_port", "443"))}"
-  target_groups_count   = "2"
-}
+  target_groups         = "${list(map("name", "automate-https", "backend_protocol", "HTTPS", "backend_port", "443"),
+                                  map("name", "chef-https", "backend_protocol", "HTTPS", "backend_port", "443"))}"
 
-resource "aws_lb_target_group_attachment" "chef-https" {
-  count            = "${var.chef_target_count}"
-  target_group_arn = "${element(module.alb.target_group_arns, 0)}"
-  target_id        = "${element(var.chef_target_ids, count.index)}"
-  port             = 443
+  target_groups_count = "2"
 }
 
 resource "aws_lb_target_group_attachment" "automate-https" {
   count            = "1"
-  target_group_arn = "${element(module.alb.target_group_arns, 1)}"
+  target_group_arn = "${element(module.alb.target_group_arns, 0)}"
   target_id        = "${element(var.automate_target_ids, count.index)}"
   port             = 443
 }
 
-resource "aws_lb_listener_rule" "forward_to_chef" {
+resource "aws_lb_target_group_attachment" "chef-https" {
+  count            = "${var.chef_target_count}"
+  target_group_arn = "${element(module.alb.target_group_arns, 1)}"
+  target_id        = "${element(var.chef_target_ids, count.index)}"
+  port             = 443
+}
+
+resource "aws_lb_listener_rule" "forward_to_automate" {
   listener_arn = "${element(module.alb.https_listener_arns, 0)}"
 
   action {
@@ -139,11 +141,11 @@ resource "aws_lb_listener_rule" "forward_to_chef" {
 
   condition {
     field  = "host-header"
-    values = ["${local.chef_alb_fqdn}"]
+    values = ["${local.automate_alb_fqdn}"]
   }
 }
 
-resource "aws_lb_listener_rule" "forward_to_automate" {
+resource "aws_lb_listener_rule" "forward_to_chef" {
   listener_arn = "${element(module.alb.https_listener_arns, 0)}"
 
   action {
@@ -153,6 +155,6 @@ resource "aws_lb_listener_rule" "forward_to_automate" {
 
   condition {
     field  = "host-header"
-    values = ["${local.automate_alb_fqdn}"]
+    values = ["${local.chef_alb_fqdn}"]
   }
 }
