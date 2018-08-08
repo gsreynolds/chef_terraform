@@ -72,3 +72,4 @@ variable "r53_ttl" {
 }
 
 variable "automate_fqdn" {}
+variable "automate_license" {}

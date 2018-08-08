@@ -32,14 +32,9 @@ resource "aws_instance" "automate_server" {
     private_key = "${file("${var.instance_keys["key_file"]}")}"
   }
 
-  # provisioner "file" {
-  #   source      = "automate.license"
-  #   destination = "/root/automate.license"
-  # }
-
   provisioner "remote-exec" {
     inline = [
-      "sudo apt update && sudo apt install -y ntp zip",
+      "sudo apt update && sudo apt install -y ntp unzip",
       "sudo hostname ${self.tags.Name}",
       "sudo hostnamectl set-hostname ${self.tags.Name}",
       "echo ${self.tags.Name} | sudo tee /etc/hostname",
@@ -50,9 +45,7 @@ resource "aws_instance" "automate_server" {
       "sudo sysctl -p /etc/sysctl.conf",
       "sudo chef-automate init-config --fqdn ${var.automate_fqdn}",
       "sudo chef-automate deploy --channel current --upgrade-strategy none --accept-terms-and-mlsa config.toml",
-
-      # "chef-automate license apply $(cat automate.license)",
-      # "rm automate.license",
+      "sudo chef-automate license apply \"${var.automate_license}\"",
       "sudo chef-automate admin-token | tee data-collector.token",
     ]
   }

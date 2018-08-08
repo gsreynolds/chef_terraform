@@ -7,6 +7,10 @@ locals {
   deployment_name = "${var.application_name}"
 }
 
+data "local_file" "automate_license" {
+  filename   = "automate.license"
+}
+
 data "aws_caller_identity" "current" {}
 
 data "aws_ami" "ubuntu" {
@@ -67,6 +71,7 @@ module "chef_automate2" {
   ami                     = "${data.aws_ami.ubuntu.id}"
   ami_user                = "${var.ami_user}"
   automate_fqdn           = "${module.chef_alb.automate_alb_fqdn}"
+  automate_license        = "${chomp("${data.local_file.automate_license.content}")}"
   default_tags            = "${var.default_tags}"
   deployment_name         = "${local.deployment_name}"
   domain                  = "${var.domain}"
