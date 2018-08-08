@@ -32,3 +32,5 @@ variable "validator_key_path" {
 
   default = "/chef/test/"
 }
+
+variable "data_collector_token" {}

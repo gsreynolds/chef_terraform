@@ -1,3 +1,7 @@
+locals {
+  data_collector_token_path = "${path.module}/.chef/data-collector.token"
+}
+
 resource "aws_instance" "automate_server" {
   count                       = 1
   ami                         = "${var.ami}"
@@ -52,6 +56,14 @@ resource "aws_instance" "automate_server" {
       "sudo chef-automate admin-token | tee data-collector.token",
     ]
   }
+  provisioner "local-exec" {
+    command = "mkdir -p ${path.module}/.chef && scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${self.public_ip}:data-collector.token ${local.data_collector_token_path}"
+  }
+}
+
+data "local_file" "data_collector_token" {
+  depends_on = ["aws_instance.automate_server"]
+  filename   = "${local.data_collector_token_path}"
 }
 
 resource "aws_eip" "automate_server" {

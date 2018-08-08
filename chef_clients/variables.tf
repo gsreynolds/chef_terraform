@@ -87,6 +87,6 @@ variable "r53_ttl" {
   default = "180"
 }
 
-variable "validator_key_path" {}
+variable "chef_validator" {}
 variable "chef_server_fqdn" {}
 variable "unattended_registration_instance_profile" {}
