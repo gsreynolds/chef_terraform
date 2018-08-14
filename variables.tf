@@ -141,7 +141,7 @@ variable "chef_backend" {
 
   default = {
     count   = 3
-    version = "2.0.1"
+    version = "2.0.30"
   }
 }
 

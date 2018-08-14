@@ -8,7 +8,7 @@ locals {
 }
 
 data "local_file" "automate_license" {
-  filename   = "automate.license"
+  filename = "automate.license"
 }
 
 data "aws_caller_identity" "current" {}
@@ -159,13 +159,13 @@ module "chef_unattended_registration" {
 module "test_org_setup" {
   source = "./test_org_setup"
 
-  # create_chef_ha = "${var.create_chef_ha}"
+  create_chef_ha = "${var.create_chef_ha}"
 
   ami_user                  = "${var.ami_user}"
   automate_fqdn             = "${module.chef_alb.automate_alb_fqdn}"
   automate_server_public_ip = "${element(module.chef_automate2.chef_automate_public_ip, 0)}"
   chef_server_ids           = "${concat(module.chef_ha.frontend_ids, module.chef_server.chef_server_id)}"
-  chef_server_public_ip     = "${element(module.chef_server.chef_server_public_ip, 0)}"
+  chef_server_public_ip     = "${element(concat(module.chef_ha.chef_server_public_ip, module.chef_server.chef_server_public_ip), 0)}"
   data_collector_token      = "${module.chef_automate2.data_collector_token}"
   instance_keys             = "${var.instance_keys}"
   validator_key_path        = "${var.validator_key_path}"
@@ -178,7 +178,7 @@ module "chef_clients" {
   ami_user                                 = "${var.ami_user}"
   az_subnet_ids                            = "${module.vpc.public_subnets}"
   chef_server_fqdn                         = "${module.chef_alb.chef_alb_fqdn}"
-  chef_validator                           = "${module.test_org_setup.test_chef_validator}"
+  chef_validator                           = ""                                                        # FIXME
   count                                    = "${var.chef_clients["count"]}"
   default_tags                             = "${var.default_tags}"
   domain                                   = "${var.domain}"

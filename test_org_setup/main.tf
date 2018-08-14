@@ -3,6 +3,8 @@ locals {
 }
 
 resource "null_resource" "chef_server_standalone_config" {
+  count = "${var.create_chef_ha ? 0 : 1}"
+
   triggers {
     chef_server_ids = "${join(",", var.chef_server_ids)}"
   }
@@ -30,6 +32,7 @@ resource "null_resource" "chef_server_standalone_config" {
 }
 
 resource "null_resource" "get_validator_key" {
+  count      = "${var.create_chef_ha ? 0 : 1}"
   depends_on = ["null_resource.chef_server_standalone_config"]
 
   triggers {
@@ -42,11 +45,13 @@ resource "null_resource" "get_validator_key" {
 }
 
 data "local_file" "test_chef_validator" {
+  count      = "${var.create_chef_ha ? 0 : 1}"
   depends_on = ["null_resource.get_validator_key"]
   filename   = "${local.validator_path}"
 }
 
 resource "aws_ssm_parameter" "test_chef_validator" {
+  count     = "${var.create_chef_ha ? 0 : 1}"
   name      = "${var.validator_key_path}chef_validator"
   type      = "SecureString"
   overwrite = true

@@ -150,3 +150,78 @@ resource "aws_route53_health_check" "frontend" {
     )
   )}"
 }
+
+resource "null_resource" "create_cluster_leader" {
+  count = 1
+
+  connection {
+    host        = "${aws_eip.backends.0.public_ip}"
+    user        = "${var.ami_user}"
+    private_key = "${file("${var.instance_keys["key_file"]}")}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "set -Eeu",
+      "sudo chef-backend-ctl create-cluster --accept-license --quiet -y",
+      "sudo cp /etc/chef-backend/chef-backend-secrets.json chef-backend-secrets.json",
+      "sudo chown ${var.ami_user}:${var.ami_user} chef-backend-secrets.json",
+    ]
+  }
+
+  # Copy back file
+  provisioner "local-exec" {
+    command = "mkdir -p ${path.module}/.chef && scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.backends.0.public_ip}:chef-backend-secrets.json ${path.module}/.chef/"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "set -Eeu",
+      "sudo rm chef-backend-secrets.json",
+    ]
+  }
+}
+
+resource "null_resource" "followers_join_cluster" {
+  count      = "${var.chef_backend["count"] - 1}"
+  depends_on = ["null_resource.create_cluster_leader"]
+
+  connection {
+    host        = "${element(aws_eip.backends.*.public_ip, count.index + 1)}"
+    user        = "${var.ami_user}"
+    private_key = "${file("${var.instance_keys["key_file"]}")}"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/.chef/chef-backend-secrets.json"
+    destination = "chef-backend-secrets.json"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "set -Eeu",
+      "sudo mkdir -p /etc/chef-backend",
+      "echo \"publish_address '${element(aws_eip.backends.*.private_ip, count.index + 1)}'\" | sudo tee /etc/chef-backend/chef-backend.rb",
+      "sudo chef-backend-ctl join-cluster ${aws_eip.backends.0.private_ip} --accept-license -s chef-backend-secrets.json -y --quiet",
+      "sudo rm chef-backend-secrets.json",
+    ]
+  }
+}
+
+resource "null_resource" "chef_server_gen_frontend_config" {
+  count      = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
+  depends_on = ["null_resource.create_cluster_leader"]
+
+  connection {
+    host        = "${aws_eip.backends.0.public_ip}"
+    user        = "${var.ami_user}"
+    private_key = "${file("${var.instance_keys["key_file"]}")}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "set -Eeu",
+      "sudo chef-backend-ctl gen-server-config ${element(aws_instance.frontends.*.tags.Name, count.index)} > chef-server.rb-${element(aws_instance.frontends.*.tags.Name, count.index)}",
+    ]
+  }
+}
