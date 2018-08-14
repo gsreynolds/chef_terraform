@@ -34,6 +34,7 @@ resource "aws_instance" "automate_server" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -Eeu",
       "sudo apt update && sudo apt install -y ntp unzip",
       "sudo hostname ${self.tags.Name}",
       "sudo hostnamectl set-hostname ${self.tags.Name}",

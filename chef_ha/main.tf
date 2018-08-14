@@ -32,6 +32,7 @@ resource "aws_instance" "backends" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -Eeu",
       "sudo apt update && sudo apt install -y ntp",
       "sudo hostname ${self.tags.Name}",
       "sudo hostnamectl set-hostname ${self.tags.Name}",
@@ -90,6 +91,7 @@ resource "aws_instance" "frontends" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -Eeu",
       "sudo apt update && sudo apt install -y ntp",
       "sudo hostname ${self.tags.Name}",
       "sudo hostnamectl set-hostname ${self.tags.Name}",

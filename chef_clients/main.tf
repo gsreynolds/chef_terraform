@@ -36,6 +36,7 @@ resource "aws_instance" "chef_clients" {
   # https://docs.chef.io/install_bootstrap.html#unattended-installs
   provisioner "remote-exec" {
     inline = [
+      "set -Eeu",
       "sudo apt update && sudo apt install -y ntp python3",
       "export LC_ALL='en_US.UTF-8' && export LC_CTYPE='en_US.UTF-8' && sudo dpkg-reconfigure  --frontend=noninteractive locales",
       "wget https://bootstrap.pypa.io/get-pip.py && sudo python3 get-pip.py -q",
@@ -56,6 +57,7 @@ resource "aws_instance" "chef_clients" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -Eeu",
       "echo 'log_location STDOUT' | sudo tee /etc/chef/client.rb",
       "echo 'chef_server_url \"https://${var.chef_server_fqdn}/organizations/test\"' | sudo tee -a /etc/chef/client.rb",
       "echo 'validation_client_name \"test-validator\"' | sudo tee -a /etc/chef/client.rb",

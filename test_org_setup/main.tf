@@ -15,6 +15,7 @@ resource "null_resource" "chef_server_standalone_config" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -Eeu",
       "sudo chef-server-ctl set-secret data_collector token '${var.data_collector_token}'",
       "sudo chef-server-ctl restart nginx && sudo chef-server-ctl restart opscode-erchef",
       "echo 'data_collector[\"root_url\"] =  \"https://${var.automate_fqdn}/data-collector/v0/\"' | sudo tee -a /etc/opscode/chef-server.rb",

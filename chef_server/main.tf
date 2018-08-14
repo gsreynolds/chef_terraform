@@ -30,12 +30,13 @@ resource "aws_instance" "chef_server" {
 
   provisioner "remote-exec" {
     inline = [
+      "set -Eeu",
       "sudo apt update && sudo apt install -y ntp",
       "sudo hostname ${self.tags.Name}",
       "sudo hostnamectl set-hostname ${self.tags.Name}",
       "echo ${self.tags.Name} | sudo tee /etc/hostname",
       "curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef-server -d /tmp",
-      "sudo mkdir /etc/opscode",
+      "sudo mkdir -p /etc/opscode",
       "echo 'topology \"standalone\"' | sudo tee -a /etc/opscode/chef-server.rb",
       "echo 'api_fqdn \"${self.tags.Name}\"' | sudo tee -a /etc/opscode/chef-server.rb",
       "sudo chef-server-ctl reconfigure",
