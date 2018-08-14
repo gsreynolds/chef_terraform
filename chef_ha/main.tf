@@ -152,7 +152,8 @@ resource "aws_route53_health_check" "frontend" {
 }
 
 resource "null_resource" "create_cluster_leader" {
-  count = 1
+  count      = "${var.create_chef_ha ? 1 : 0}"
+  depends_on = ["aws_eip.backends"]
 
   connection {
     host        = "${aws_eip.backends.0.public_ip}"
@@ -210,7 +211,7 @@ resource "null_resource" "followers_join_cluster" {
 
 resource "null_resource" "chef_server_gen_frontend_config" {
   count      = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
-  depends_on = ["null_resource.create_cluster_leader"]
+  depends_on = ["null_resource.followers_join_cluster"]
 
   connection {
     host        = "${aws_eip.backends.0.public_ip}"

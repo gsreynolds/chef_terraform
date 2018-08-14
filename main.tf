@@ -163,7 +163,8 @@ module "chef_unattended_registration" {
 module "test_org_setup" {
   source = "./test_org_setup"
 
-  create_chef_ha = "${var.create_chef_ha}"
+  # server_ready is an inter-module dependency workaround to ensure that the org doesn't get created until chef server/all front ends are configured
+  server_ready = "${concat(module.chef_ha.data_collector_configured, module.chef_server.data_collector_configured)}"
 
   ami_user                  = "${var.ami_user}"
   automate_fqdn             = "${module.chef_alb.automate_alb_fqdn}"

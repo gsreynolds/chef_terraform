@@ -5,6 +5,7 @@ locals {
 resource "null_resource" "chef_server_create_test_org" {
   triggers {
     chef_server_ids = "${join(",", var.chef_server_ids)}"
+    server_ready    = "${join(",", var.server_ready)}"
   }
 
   connection {
@@ -28,6 +29,7 @@ resource "null_resource" "get_validator_key" {
 
   triggers {
     chef_server_ids = "${join(",", var.chef_server_ids)}"
+    server_ready    = "${join(",", var.server_ready)}"
   }
 
   provisioner "local-exec" {

@@ -1,8 +1,3 @@
-variable "create_chef_ha" {
-  description = "Create Chef Server in HA topology if true, standalone topology if false"
-  default     = false
-}
-
 variable "ami_user" {
   type        = "string"
   description = "Default username"
@@ -39,3 +34,9 @@ variable "validator_key_path" {
 }
 
 variable "data_collector_token" {}
+
+variable "server_ready" {
+  type = "list"
+
+  default = []
+}
