@@ -139,3 +139,7 @@ variable "r53_ttl" {
 
 variable "zone_id" {}
 variable "account_id" {}
+
+variable automate_fqdn {}
+
+variable "data_collector_token" {}

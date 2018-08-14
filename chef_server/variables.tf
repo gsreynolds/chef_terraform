@@ -74,3 +74,7 @@ variable "r53_ttl" {
 
   default = "180"
 }
+
+variable automate_fqdn {}
+
+variable "data_collector_token" {}

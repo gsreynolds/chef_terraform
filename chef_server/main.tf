@@ -84,3 +84,26 @@ resource "aws_route53_health_check" "chef_server" {
     )
   )}"
 }
+
+resource "null_resource" "configure_data_collection" {
+  count      = "${var.create_chef_ha ? 0 : 1}"
+  depends_on = ["aws_eip.chef_server"]
+
+  connection {
+    host        = "${element(aws_eip.chef_server.*.public_ip, count.index)}"
+    user        = "${var.ami_user}"
+    private_key = "${file("${var.instance_keys["key_file"]}")}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "set -Eeu",
+      "sudo chef-server-ctl set-secret data_collector token '${var.data_collector_token}'",
+      "sudo chef-server-ctl restart nginx && sudo chef-server-ctl restart opscode-erchef",
+      "echo 'data_collector[\"root_url\"] =  \"https://${var.automate_fqdn}/data-collector/v0/\"' | sudo tee -a /etc/opscode/chef-server.rb",
+      "echo 'data_collector[\"proxy\"] = true' | sudo tee -a /etc/opscode/chef-server.rb",
+      "echo 'profiles[\"root_url\"] = \"https://${var.automate_fqdn}\"' | sudo tee -a /etc/opscode/chef-server.rb",
+      "sudo chef-server-ctl reconfigure",
+    ]
+  }
+}
