@@ -2,9 +2,7 @@ locals {
   validator_path = "${path.module}/.chef/test-validator.pem"
 }
 
-resource "null_resource" "chef_server_standalone_config" {
-  count = "${var.create_chef_ha ? 0 : 1}"
-
+resource "null_resource" "chef_server_create_test_org" {
   triggers {
     chef_server_ids = "${join(",", var.chef_server_ids)}"
   }
@@ -18,15 +16,7 @@ resource "null_resource" "chef_server_standalone_config" {
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
-
-      # "sudo chef-server-ctl set-secret data_collector token '${var.data_collector_token}'",
-      # "sudo chef-server-ctl restart nginx && sudo chef-server-ctl restart opscode-erchef",
-      # "echo 'data_collector[\"root_url\"] =  \"https://${var.automate_fqdn}/data-collector/v0/\"' | sudo tee -a /etc/opscode/chef-server.rb",
-      # "echo 'data_collector[\"proxy\"] = true' | sudo tee -a /etc/opscode/chef-server.rb",
-      # "echo 'profiles[\"root_url\"] = \"https://${var.automate_fqdn}\"' | sudo tee -a /etc/opscode/chef-server.rb",
-      # "sudo chef-server-ctl reconfigure",
       "sudo chef-server-ctl org-create test TestOrg -f test-validator.pem",
-
       "sudo chef-server-ctl user-create admin Admin User admin@example.com TestPassword -o test -f admin.pem",
       "sudo chef-server-ctl grant-server-admin-permissions admin",
     ]
@@ -34,8 +24,7 @@ resource "null_resource" "chef_server_standalone_config" {
 }
 
 resource "null_resource" "get_validator_key" {
-  count      = "${var.create_chef_ha ? 0 : 1}"
-  depends_on = ["null_resource.chef_server_standalone_config"]
+  depends_on = ["null_resource.chef_server_create_test_org"]
 
   triggers {
     chef_server_ids = "${join(",", var.chef_server_ids)}"
@@ -47,13 +36,11 @@ resource "null_resource" "get_validator_key" {
 }
 
 data "local_file" "test_chef_validator" {
-  count      = "${var.create_chef_ha ? 0 : 1}"
   depends_on = ["null_resource.get_validator_key"]
   filename   = "${local.validator_path}"
 }
 
 resource "aws_ssm_parameter" "test_chef_validator" {
-  count     = "${var.create_chef_ha ? 0 : 1}"
   name      = "${var.validator_key_path}chef_validator"
   type      = "SecureString"
   overwrite = true

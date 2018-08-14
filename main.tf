@@ -182,7 +182,7 @@ module "chef_clients" {
   ami_user                                 = "${var.ami_user}"
   az_subnet_ids                            = "${module.vpc.public_subnets}"
   chef_server_fqdn                         = "${module.chef_alb.chef_alb_fqdn}"
-  chef_validator                           = ""                                                        # FIXME
+  chef_validator                           = "${module.test_org_setup.test_chef_validator}"
   count                                    = "${var.chef_clients["count"]}"
   default_tags                             = "${var.default_tags}"
   domain                                   = "${var.domain}"
