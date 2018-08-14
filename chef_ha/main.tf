@@ -183,7 +183,7 @@ resource "null_resource" "create_cluster_leader" {
 }
 
 resource "null_resource" "followers_join_cluster" {
-  count      = "${var.chef_backend["count"] - 1}"
+  count      = "${var.create_chef_ha ? var.chef_backend["count"] - 1 : 0}"
   depends_on = ["null_resource.create_cluster_leader"]
 
   connection {
@@ -222,6 +222,96 @@ resource "null_resource" "chef_server_gen_frontend_config" {
     inline = [
       "set -Eeu",
       "sudo chef-backend-ctl gen-server-config ${element(aws_instance.frontends.*.tags.Name, count.index)} > chef-server.rb-${element(aws_instance.frontends.*.tags.Name, count.index)}",
+    ]
+  }
+
+  provisioner "local-exec" {
+    command = "scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.backends.0.public_ip}:chef-server.rb-${element(aws_instance.frontends.*.tags.Name, count.index)} ${path.module}/.chef/"
+  }
+}
+
+resource "null_resource" "chef_server_upload_frontend_config" {
+  count      = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
+  depends_on = ["null_resource.chef_server_gen_frontend_config"]
+
+  connection {
+    host        = "${element(aws_eip.frontends.*.public_ip, count.index)}"
+    user        = "${var.ami_user}"
+    private_key = "${file("${var.instance_keys["key_file"]}")}"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/.chef/chef-server.rb-${element(aws_instance.frontends.*.tags.Name, count.index)}"
+    destination = "chef-server.rb"
+  }
+}
+
+resource "null_resource" "configure_first_frontend" {
+  count      = "${var.create_chef_ha ? 1 : 0}"
+  depends_on = ["null_resource.chef_server_upload_frontend_config"]
+
+  connection {
+    host        = "${aws_eip.frontends.0.public_ip}"
+    user        = "${var.ami_user}"
+    private_key = "${file("${var.instance_keys["key_file"]}")}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "set -Eeu",
+      "sudo cp chef-server.rb /etc/opscode/chef-server.rb",
+      "sudo chef-server-ctl reconfigure",
+      "sudo cp /etc/opscode/private-chef-secrets.json /var/opt/opscode/upgrades/migration-level ~",
+      "sudo chown ${var.ami_user}:${var.ami_user} *",
+    ]
+  }
+
+  provisioner "local-exec" {
+    command = "scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.frontends.0.public_ip}:private-chef-secrets.json ${path.module}/.chef/"
+  }
+
+  provisioner "local-exec" {
+    command = "scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.frontends.0.public_ip}:migration-level ${path.module}/.chef/"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "set -Eeu",
+      "sudo rm chef-server.rb private-chef-secrets.json",
+    ]
+  }
+}
+
+resource "null_resource" "configure_other_frontends" {
+  count      = "${var.create_chef_ha ? var.chef_frontend["count"] - 1 : 0}"
+  depends_on = ["null_resource.configure_first_frontend"]
+
+  connection {
+    host        = "${element(aws_eip.frontends.*.public_ip, count.index + 1)}"
+    user        = "${var.ami_user}"
+    private_key = "${file("${var.instance_keys["key_file"]}")}"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/.chef/private-chef-secrets.json"
+    destination = "private-chef-secrets.json"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/.chef/migration-level"
+    destination = "migration-level"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "set -Eeu",
+      "sudo cp chef-server.rb /etc/opscode/chef-server.rb",
+      "sudo cp private-chef-secrets.json /etc/opscode/private-chef-secrets.json",
+      "sudo mkdir -p /var/opt/opscode/upgrades",
+      "sudo cp migration-level /var/opt/opscode/upgrades/migration-level",
+      "sudo touch /var/opt/opscode/bootstrapped",
+      "sudo chef-server-ctl reconfigure",
+      "sudo rm chef-server.rb private-chef-secrets.json migration-level",
     ]
   }
 }
