@@ -5,10 +5,10 @@ provider = {
 
 application_name = "My Chef Automate"
 
-create_chef_ha = false
+create_chef_ha = true
 
 chef_clients = {
-  count = 0
+  count = 3
 }
 
 default_tags = {
@@ -49,6 +49,10 @@ instance_keys = {
 }
 
 chef_frontend = {
+  count = 3
+}
+
+chef_backend = {
   count = 3
 }
 
