@@ -201,6 +201,12 @@ resource "null_resource" "followers_join_cluster" {
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
+
+      # FIXME: Allow chef-backend cluster leader enough time to fully start up
+      #        and for the cluster joining process to fully complete for each node
+      #        by sleeping 2 minutes for backend 2 and 4 minutes for backend 3
+      "sleep ${120 * (count.index + 1)}",
+
       "sudo mkdir -p /etc/chef-backend",
       "echo \"publish_address '${element(aws_eip.backends.*.private_ip, count.index + 1)}'\" | sudo tee /etc/chef-backend/chef-backend.rb",
       "sudo chef-backend-ctl join-cluster ${aws_eip.backends.0.private_ip} --accept-license -s chef-backend-secrets.json -y --quiet",
