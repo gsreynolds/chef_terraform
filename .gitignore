@@ -14,3 +14,4 @@ terraform.tfvars
 # Ignore .chef directories
 **/.chef/*
 automate.license
+chef-load*
