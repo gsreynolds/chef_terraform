@@ -22,6 +22,8 @@ resource "null_resource" "chef_server_create_test_org" {
       "sudo chef-server-ctl grant-server-admin-permissions admin",
     ]
   }
+
+  # FIXME: scp admin.pem
 }
 
 resource "null_resource" "get_validator_key" {

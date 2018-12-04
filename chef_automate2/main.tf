@@ -35,7 +35,7 @@ resource "aws_instance" "automate_server" {
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
-      "sudo apt update && sudo apt install -y ntp unzip",
+      "sudo apt update && sudo apt install -y ntp zip",
       "sudo hostname ${self.tags.Name}",
       "sudo hostnamectl set-hostname ${self.tags.Name}",
       "echo ${self.tags.Name} | sudo tee /etc/hostname",
@@ -50,6 +50,7 @@ resource "aws_instance" "automate_server" {
       "sudo chef-automate admin-token | tee data-collector.token",
     ]
   }
+
   provisioner "local-exec" {
     command = "mkdir -p ${path.module}/.chef && scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${self.public_ip}:data-collector.token ${local.data_collector_token_path}"
   }

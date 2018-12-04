@@ -103,6 +103,7 @@ resource "null_resource" "configure_data_collection" {
       "echo 'data_collector[\"root_url\"] =  \"https://${var.automate_fqdn}/data-collector/v0/\"' | sudo tee -a /etc/opscode/chef-server.rb",
       "echo 'data_collector[\"proxy\"] = true' | sudo tee -a /etc/opscode/chef-server.rb",
       "echo 'profiles[\"root_url\"] = \"https://${var.automate_fqdn}\"' | sudo tee -a /etc/opscode/chef-server.rb",
+      "echo 'opscode_erchef[\"max_request_size\"] = 2000000' | sudo tee -a /etc/opscode/chef-server.rb",
       "sudo chef-server-ctl reconfigure",
     ]
   }
