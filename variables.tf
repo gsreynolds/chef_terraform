@@ -151,7 +151,7 @@ variable "chef_frontend" {
 
   default = {
     count   = 3
-    version = "12.18.14"
+    version = "12.19.31"
   }
 }
 
@@ -160,7 +160,8 @@ variable "chef_clients" {
   description = "Chef Client settings"
 
   default = {
-    count = 0
+    count   = 0
+    version = "14.13.11"
   }
 }
 

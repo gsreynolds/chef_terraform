@@ -30,6 +30,8 @@ variable "default_tags" {
   }
 }
 
+variable "chef_client_version" {}
+
 variable "az_subnet_ids" {
   type        = "list"
   description = "Availability zone subnet IDs"

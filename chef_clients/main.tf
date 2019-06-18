@@ -45,7 +45,7 @@ resource "aws_instance" "chef_clients" {
       "sudo hostnamectl set-hostname ${self.tags.Name}",
       "echo ${self.tags.Name} | sudo tee /etc/hostname",
       "sudo mkdir -p /etc/chef && sudo mkdir -p /var/lib/chef && sudo mkdir -p /var/log/chef",
-      "curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -d /tmp",
+      "curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -d /tmp -v ${var.chef_client_version}",
       "aws ssm get-parameter --name ${var.chef_validator} --with-decryption --output text --query Parameter.Value --region ${var.provider["region"]} | sudo tee /etc/chef/validator.pem > /dev/null",
     ]
   }

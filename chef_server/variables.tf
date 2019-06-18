@@ -22,6 +22,8 @@ variable "default_tags" {
   }
 }
 
+variable "chef_server_version" {}
+
 variable "ssh_security_group_id" {}
 variable "https_security_group_id" {}
 
