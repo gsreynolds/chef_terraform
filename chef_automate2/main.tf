@@ -1,7 +1,3 @@
-locals {
-  data_collector_token_path = "${path.module}/.chef/data-collector.token"
-}
-
 resource "aws_instance" "automate_server" {
   count                       = 1
   ami                         = "${var.ami}"
@@ -47,18 +43,10 @@ resource "aws_instance" "automate_server" {
       "sudo chef-automate init-config --fqdn ${var.automate_fqdn}",
       "sudo chef-automate deploy --channel current --upgrade-strategy none --accept-terms-and-mlsa config.toml",
       "sudo chef-automate license apply \"${var.automate_license}\"",
-      "sudo chef-automate admin-token | tee data-collector.token",
+      "sudo echo -e \"api-token =\" $(sudo chef-automate admin-token) >> automate-credentials.toml",
+      "sudo chown ${var.ami_user}:${var.ami_user} automate-credentials.toml",
     ]
   }
-
-  provisioner "local-exec" {
-    command = "mkdir -p ${path.module}/.chef && scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${self.public_ip}:data-collector.token ${local.data_collector_token_path}"
-  }
-}
-
-data "local_file" "data_collector_token" {
-  depends_on = ["aws_instance.automate_server"]
-  filename   = "${local.data_collector_token_path}"
 }
 
 resource "aws_eip" "automate_server" {
@@ -74,6 +62,17 @@ resource "aws_eip" "automate_server" {
       "Name", "${format("%s%02d.%s", var.hostnames["automate_server"], count.index + 1, var.domain)}"
     )
   )}"
+}
+
+data "external" "a2_secrets" {
+  program    = ["bash", "${path.module}/get-automate-secrets.sh"]
+  depends_on = ["aws_eip.automate_server"]
+
+  query = {
+    ssh_user = "${var.ami_user}"
+    ssh_key  = "${"${var.instance_keys["key_file"]}"}"
+    a2_ip    = "${aws_eip.automate_server.public_ip}"
+  }
 }
 
 resource "aws_route53_record" "automate_server" {
