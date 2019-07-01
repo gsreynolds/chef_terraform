@@ -43,8 +43,8 @@ resource "aws_instance" "automate_server" {
       "sudo chef-automate init-config --fqdn ${var.automate_fqdn}",
       "sudo chef-automate deploy --channel current --upgrade-strategy none --accept-terms-and-mlsa config.toml",
       "sudo chef-automate license apply \"${var.automate_license}\"",
-      "sudo echo -e \"api-token =\" $(sudo chef-automate admin-token) >> automate-credentials.toml",
       "sudo chown ${var.ami_user}:${var.ami_user} automate-credentials.toml",
+      "echo api-token = \"$(sudo chef-automate admin-token)\" >> automate-credentials.toml"
     ]
   }
 }
