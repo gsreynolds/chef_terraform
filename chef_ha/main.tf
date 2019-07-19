@@ -267,7 +267,7 @@ resource "null_resource" "configure_first_frontend" {
     inline = [
       "set -Eeu",
       "sudo cp chef-server.rb /etc/opscode/chef-server.rb",
-      "sudo chef-server-ctl reconfigure",
+      "sudo chef-server-ctl reconfigure --chef-license=accept",
       "sudo cp /etc/opscode/private-chef-secrets.json /var/opt/opscode/upgrades/migration-level ~",
       "sudo chown ${var.ami_user}:${var.ami_user} *",
     ]
@@ -317,7 +317,7 @@ resource "null_resource" "configure_other_frontends" {
       "sudo mkdir -p /var/opt/opscode/upgrades",
       "sudo cp migration-level /var/opt/opscode/upgrades/migration-level",
       "sudo touch /var/opt/opscode/bootstrapped",
-      "sudo chef-server-ctl reconfigure",
+      "sudo chef-server-ctl reconfigure --chef-license=accept",
       "sudo rm chef-server.rb private-chef-secrets.json migration-level",
     ]
   }

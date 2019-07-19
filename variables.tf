@@ -157,7 +157,7 @@ variable "chef_frontend" {
 
   default = {
     count   = 3
-    version = "12.19.31"
+    version = "13.0.17"
   }
 }
 

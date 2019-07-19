@@ -39,7 +39,7 @@ resource "aws_instance" "chef_server" {
       "sudo mkdir -p /etc/opscode",
       "echo 'topology \"standalone\"' | sudo tee -a /etc/opscode/chef-server.rb",
       "echo 'api_fqdn \"${self.tags.Name}\"' | sudo tee -a /etc/opscode/chef-server.rb",
-      "sudo chef-server-ctl reconfigure",
+      "sudo chef-server-ctl reconfigure --chef-license=accept",
     ]
   }
 }
