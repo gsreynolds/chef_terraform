@@ -136,7 +136,10 @@ variable "validator_key_path" {
 }
 
 variable "chef_backend" {
-  type        = map(string)
+  type        = object({
+    count = number
+    version = string
+  })
   description = "Chef backend settings"
 
   default = {
@@ -146,7 +149,10 @@ variable "chef_backend" {
 }
 
 variable "chef_frontend" {
-  type        = map(string)
+  type        = object({
+    count = number
+    version = string
+  })
   description = "Chef frontend settings"
 
   default = {
@@ -156,7 +162,10 @@ variable "chef_frontend" {
 }
 
 variable "chef_clients" {
-  type        = map(string)
+  type        = object({
+    count = number
+    version = string
+  })
   description = "Chef Client settings"
 
   default = {
