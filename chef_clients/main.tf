@@ -37,6 +37,7 @@ resource "aws_instance" "chef_clients" {
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
+      "sudo apt update && sudo apt upgrade -y",
       "sudo apt update && sudo apt upgrade -y && sudo apt install -y ntp python3 python3-pip",
       "export LC_ALL='en_US.UTF-8' && export LC_CTYPE='en_US.UTF-8' && sudo dpkg-reconfigure  --frontend=noninteractive locales",
       "sudo pip3 -q install awscli --upgrade",
