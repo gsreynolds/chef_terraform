@@ -7,7 +7,7 @@ module "ssh_sg" {
   description = "Security group for SSH-in and egress"
   vpc_id      = "${var.vpc_id}"
 
-  ingress_cidr_blocks = ["${var.ssh_whitelist_cidrs}"]
+  ingress_cidr_blocks = var.ssh_whitelist_cidrs
   ingress_rules       = ["ssh-tcp"]
 
   egress_cidr_blocks = ["0.0.0.0/0"]

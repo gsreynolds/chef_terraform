@@ -3,7 +3,7 @@ locals {
 }
 
 resource "null_resource" "chef_server_create_test_org" {
-  triggers {
+  triggers = {
     chef_server_ids = "${join(",", var.chef_server_ids)}"
     server_ready    = "${join(",", var.server_ready)}"
   }
@@ -29,7 +29,7 @@ resource "null_resource" "chef_server_create_test_org" {
 resource "null_resource" "get_validator_key" {
   depends_on = ["null_resource.chef_server_create_test_org"]
 
-  triggers {
+  triggers = {
     chef_server_ids = "${join(",", var.chef_server_ids)}"
     server_ready    = "${join(",", var.server_ready)}"
   }

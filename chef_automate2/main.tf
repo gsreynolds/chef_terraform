@@ -71,7 +71,7 @@ data "external" "a2_secrets" {
   query = {
     ssh_user = "${var.ami_user}"
     ssh_key  = "${"${var.instance_keys["key_file"]}"}"
-    a2_ip    = "${aws_eip.automate_server.public_ip}"
+    a2_ip    = "${aws_eip.automate_server[0].public_ip}"
   }
 }
 

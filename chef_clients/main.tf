@@ -1,5 +1,5 @@
 resource "aws_instance" "chef_clients" {
-  count = "${var.count}"
+  count = "${var.instance_count}"
 
   # depends_on = ["aws_instance.chef_server"]
   ami = "${var.ami}"
@@ -45,7 +45,7 @@ resource "aws_instance" "chef_clients" {
       "echo ${self.tags.Name} | sudo tee /etc/hostname",
       "sudo mkdir -p /etc/chef && sudo mkdir -p /var/lib/chef && sudo mkdir -p /var/log/chef",
       "curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -d /tmp -v ${var.chef_client_version}",
-      "aws ssm get-parameter --name ${var.chef_validator} --with-decryption --output text --query Parameter.Value --region ${var.provider["region"]} | sudo tee /etc/chef/validator.pem > /dev/null",
+      "aws ssm get-parameter --name ${var.chef_validator} --with-decryption --output text --query Parameter.Value --region ${var.aws_provider["region"]} | sudo tee /etc/chef/validator.pem > /dev/null",
     ]
   }
 
@@ -70,7 +70,7 @@ resource "aws_instance" "chef_clients" {
 }
 
 resource "aws_route53_record" "chef_clients" {
-  count   = "${var.count}"
+  count   = "${var.instance_count}"
   zone_id = "${var.zone_id}"
   name    = "${element(aws_instance.chef_clients.*.tags.Name, count.index)}"
   type    = "A"

@@ -42,7 +42,7 @@ resource "aws_iam_policy" "chef_validator" {
             "Action": [
                 "ssm:Get*"
             ],
-            "Resource": "arn:aws:ssm:${var.provider["region"]}:${var.account_id}:parameter${var.validator_key_path}*"
+            "Resource": "arn:aws:ssm:${var.aws_provider["region"]}:${var.account_id}:parameter${var.validator_key_path}*"
         }
     ]
 }

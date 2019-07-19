@@ -1,5 +1,5 @@
-variable "provider" {
-  type        = "map"
+variable "aws_provider" {
+  type        = map(string)
   description = "AWS provider settings"
 
   default = {
@@ -19,7 +19,7 @@ variable "create_chef_ha" {
 }
 
 variable "default_tags" {
-  type        = "map"
+  type        = map(string)
   description = "Default resource tags"
 
   default = {
@@ -28,7 +28,7 @@ variable "default_tags" {
 }
 
 variable "vpc" {
-  type        = "map"
+  type        = map(string)
   description = "VPC CIDR block"
 
   default = {
@@ -37,13 +37,13 @@ variable "vpc" {
 }
 
 variable "az_subnets" {
-  type        = "map"
+  type        = map(string)
   description = "Availability zone subnets"
   default     = {}
 }
 
 variable "ssh_whitelist_cidrs" {
-  type        = "list"
+  type        = list(string)
   description = "List of CIDRs to allow SSH"
   default     = ["0.0.0.0/0"]
 }
@@ -54,14 +54,14 @@ variable "domain" {
 }
 
 variable "ami_user" {
-  type        = "string"
+  type        = string
   description = "Default username"
 
   default = "ubuntu"
 }
 
 variable "instance" {
-  type        = "map"
+  type        = map(string)
   description = "AWS Instance settings"
 
   default = {
@@ -101,7 +101,7 @@ variable "instance" {
 }
 
 variable "hostnames" {
-  type        = "map"
+  type        = map(string)
   description = "Instance hostname prefix"
 
   default = {
@@ -112,7 +112,7 @@ variable "hostnames" {
 }
 
 variable "instance_keys" {
-  type        = "map"
+  type        = map(string)
   description = ""
 
   default = {
@@ -122,21 +122,21 @@ variable "instance_keys" {
 }
 
 variable "r53_ttl" {
-  type        = "string"
+  type        = string
   description = "DNS record TTLS"
 
   default = "180"
 }
 
 variable "validator_key_path" {
-  type        = "string"
+  type        = string
   description = "Path to org validator key in SSM"
 
   default = "/chef/test/"
 }
 
 variable "chef_backend" {
-  type        = "map"
+  type        = map(string)
   description = "Chef backend settings"
 
   default = {
@@ -146,7 +146,7 @@ variable "chef_backend" {
 }
 
 variable "chef_frontend" {
-  type        = "map"
+  type        = map(string)
   description = "Chef frontend settings"
 
   default = {
@@ -156,7 +156,7 @@ variable "chef_frontend" {
 }
 
 variable "chef_clients" {
-  type        = "map"
+  type        = map(string)
   description = "Chef Client settings"
 
   default = {
@@ -169,3 +169,4 @@ variable "log_bucket" {
   description = "Chef HA Log bucket"
   default     = "chef-ha-logs"
 }
+

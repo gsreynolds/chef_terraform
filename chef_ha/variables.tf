@@ -13,7 +13,7 @@ variable "ami_user" {
   default = "ubuntu"
 }
 
-variable "provider" {
+variable "aws_provider" {
   type        = "map"
   description = "AWS provider settings"
 
