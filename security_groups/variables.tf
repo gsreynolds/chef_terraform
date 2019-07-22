@@ -3,10 +3,11 @@ variable "create_chef_ha" {
   default     = false
 }
 
-variable "deployment_name" {}
+variable "deployment_name" {
+}
 
 variable "default_tags" {
-  type        = "map"
+  type        = map(string)
   description = "Default resource tags"
 
   default = {
@@ -15,12 +16,16 @@ variable "default_tags" {
 }
 
 variable "ssh_whitelist_cidrs" {
-  type        = "list"
+  type        = list(string)
   description = "List of CIDRs to allow SSH"
   default     = ["0.0.0.0/0"]
 }
 
-variable "vpc_id" {}
+variable "vpc_id" {
+}
 
-variable "zone_id" {}
-variable "account_id" {}
+variable "zone_id" {
+}
+
+variable "account_id" {
+}

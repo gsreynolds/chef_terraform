@@ -1,36 +1,42 @@
 resource "aws_instance" "chef_clients" {
-  count = "${var.instance_count}"
+  count = var.instance_count
 
   # depends_on = ["aws_instance.chef_server"]
-  ami = "${var.ami}"
+  ami = var.ami
 
   # ebs_optimized               = "${var.instance["ebs_optimized"]}"
-  instance_type               = "${var.instance["chef_client_flavor"]}"
-  associate_public_ip_address = "${var.instance["chef_client_public"]}"
-  subnet_id                   = "${element(var.az_subnet_ids, count.index)}"
-  vpc_security_group_ids      = ["${var.ssh_security_group_id}"]
-  key_name                    = "${var.instance_keys["key_name"]}"
+  instance_type               = var.instance["chef_client_flavor"]
+  associate_public_ip_address = var.instance["chef_client_public"]
+  subnet_id                   = element(var.az_subnet_ids, count.index)
+  vpc_security_group_ids      = [var.ssh_security_group_id]
+  key_name                    = var.instance_keys["key_name"]
 
-  iam_instance_profile = "${var.unattended_registration_instance_profile}"
+  iam_instance_profile = var.unattended_registration_instance_profile
 
-  tags = "${merge(
+  tags = merge(
     var.default_tags,
-    map(
-      "Name", "${format("%s%02d.%s", var.hostnames["chef_client"], count.index + 1, var.domain)}"
-    )
-  )}"
+    {
+      "Name" = format(
+        "%s%02d.%s",
+        var.hostnames["chef_client"],
+        count.index + 1,
+        var.domain,
+      )
+    },
+  )
 
   root_block_device {
-    delete_on_termination = "${var.instance["chef_client_term"]}"
-    volume_size           = "${var.instance["chef_client_size"]}"
-    volume_type           = "${var.instance["chef_client_type"]}"
-    iops                  = "${var.instance["chef_client_iops"]}"
+    delete_on_termination = var.instance["chef_client_term"]
+    volume_size           = var.instance["chef_client_size"]
+    volume_type           = var.instance["chef_client_type"]
+    iops                  = var.instance["chef_client_iops"]
   }
 
   connection {
-    host        = "${self.public_ip}"
-    user        = "${var.ami_user}"
-    private_key = "${file("${var.instance_keys["key_file"]}")}"
+    type        = "ssh"
+    host        = self.public_ip
+    user        = var.ami_user
+    private_key = file(var.instance_keys["key_file"])
   }
 
   # https://docs.chef.io/install_bootstrap.html#unattended-installs
@@ -71,10 +77,10 @@ resource "aws_instance" "chef_clients" {
 }
 
 resource "aws_route53_record" "chef_clients" {
-  count   = "${var.instance_count}"
-  zone_id = "${var.zone_id}"
-  name    = "${element(aws_instance.chef_clients.*.tags.Name, count.index)}"
+  count   = var.instance_count
+  zone_id = var.zone_id
+  name    = element(aws_instance.chef_clients.*.tags.Name, count.index)
   type    = "A"
-  ttl     = "${var.r53_ttl}"
-  records = ["${element(aws_instance.chef_clients.*.public_ip, count.index)}"]
+  ttl     = var.r53_ttl
+  records = [element(aws_instance.chef_clients.*.public_ip, count.index)]
 }

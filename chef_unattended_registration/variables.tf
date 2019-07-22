@@ -1,12 +1,12 @@
 variable "validator_key_path" {
-  type        = "string"
+  type        = string
   description = "Path to org validator key in SSM"
 
   default = "/chef/test/"
 }
 
 variable "aws_provider" {
-  type        = "map"
+  type        = map(string)
   description = "AWS provider settings"
 
   default = {
@@ -15,4 +15,5 @@ variable "aws_provider" {
   }
 }
 
-variable "account_id" {}
+variable "account_id" {
+}

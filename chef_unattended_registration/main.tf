@@ -23,7 +23,7 @@ EOF
 }
 
 resource "aws_iam_policy" "chef_validator" {
-  name        = "chef_validator"
+  name = "chef_validator"
   description = "IAM policy to allow nodes to get Chef Validator key for Test org"
 
   policy = <<EOF
@@ -50,11 +50,11 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "chef_validator_attach" {
-  role       = "${aws_iam_role.chef_validator.name}"
-  policy_arn = "${aws_iam_policy.chef_validator.arn}"
+role       = aws_iam_role.chef_validator.name
+policy_arn = aws_iam_policy.chef_validator.arn
 }
 
 resource "aws_iam_instance_profile" "chef_validator" {
-  name = "chef_validator"
-  role = "${aws_iam_role.chef_validator.name}"
+name = "chef_validator"
+role = aws_iam_role.chef_validator.name
 }

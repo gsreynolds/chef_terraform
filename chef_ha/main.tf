@@ -1,33 +1,39 @@
 # Instances
 
 resource "aws_instance" "backends" {
-  count                       = "${var.create_chef_ha ? var.chef_backend["count"] : 0}"
-  ami                         = "${var.ami}"
-  ebs_optimized               = "${var.instance["ebs_optimized"]}"
-  instance_type               = "${var.instance["backend_flavor"]}"
-  associate_public_ip_address = "${var.instance["backend_public"]}"
-  subnet_id                   = "${element(var.az_subnet_ids, count.index)}"
-  vpc_security_group_ids      = ["${var.backend_security_group_id}", "${var.ssh_security_group_id}"]
-  key_name                    = "${var.instance_keys["key_name"]}"
+  count                       = var.create_chef_ha ? var.chef_backend["count"] : 0
+  ami                         = var.ami
+  ebs_optimized               = var.instance["ebs_optimized"]
+  instance_type               = var.instance["backend_flavor"]
+  associate_public_ip_address = var.instance["backend_public"]
+  subnet_id                   = element(var.az_subnet_ids, count.index)
+  vpc_security_group_ids      = [var.backend_security_group_id, var.ssh_security_group_id]
+  key_name                    = var.instance_keys["key_name"]
 
-  tags = "${merge(
+  tags = merge(
     var.default_tags,
-    map(
-      "Name", "${format("%s%02d.%s", var.hostnames["backend"], count.index + 1, var.domain)}"
-    )
-  )}"
+    {
+      "Name" = format(
+        "%s%02d.%s",
+        var.hostnames["backend"],
+        count.index + 1,
+        var.domain,
+      )
+    },
+  )
 
   root_block_device {
-    delete_on_termination = "${var.instance["backend_term"]}"
-    volume_size           = "${var.instance["backend_size"]}"
-    volume_type           = "${var.instance["backend_type"]}"
-    iops                  = "${var.instance["backend_iops"]}"
+    delete_on_termination = var.instance["backend_term"]
+    volume_size           = var.instance["backend_size"]
+    volume_type           = var.instance["backend_type"]
+    iops                  = var.instance["backend_iops"]
   }
 
   connection {
-    host        = "${self.public_ip}"
-    user        = "${var.ami_user}"
-    private_key = "${file("${var.instance_keys["key_file"]}")}"
+    type        = "ssh"
+    host        = self.public_ip
+    user        = var.ami_user
+    private_key = file(var.instance_keys["key_file"])
   }
 
   provisioner "remote-exec" {
@@ -46,47 +52,58 @@ resource "aws_instance" "backends" {
 
 resource "aws_eip" "backends" {
   vpc      = true
-  count    = "${var.create_chef_ha ? var.chef_backend["count"] : 0}"
-  instance = "${element(aws_instance.backends.*.id, count.index)}"
+  count    = var.create_chef_ha ? var.chef_backend["count"] : 0
+  instance = element(aws_instance.backends.*.id, count.index)
 
   # depends_on = ["aws_internet_gateway.main"]
 
-  tags = "${merge(
+  tags = merge(
     var.default_tags,
-    map(
-      "Name", "${format("%s%02d.%s", var.hostnames["backend"], count.index + 1, var.domain)}"
-    )
-  )}"
+    {
+      "Name" = format(
+        "%s%02d.%s",
+        var.hostnames["backend"],
+        count.index + 1,
+        var.domain,
+      )
+    },
+  )
 }
 
 resource "aws_instance" "frontends" {
-  count                       = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
-  ami                         = "${var.ami}"
-  ebs_optimized               = "${var.instance["ebs_optimized"]}"
-  instance_type               = "${var.instance["frontend_flavor"]}"
-  associate_public_ip_address = "${var.instance["frontend_public"]}"
-  subnet_id                   = "${element(var.az_subnet_ids, count.index)}"
-  vpc_security_group_ids      = ["${var.https_security_group_id}", "${var.ssh_security_group_id}"]
-  key_name                    = "${var.instance_keys["key_name"]}"
+  count                       = var.create_chef_ha ? var.chef_frontend["count"] : 0
+  ami                         = var.ami
+  ebs_optimized               = var.instance["ebs_optimized"]
+  instance_type               = var.instance["frontend_flavor"]
+  associate_public_ip_address = var.instance["frontend_public"]
+  subnet_id                   = element(var.az_subnet_ids, count.index)
+  vpc_security_group_ids      = [var.https_security_group_id, var.ssh_security_group_id]
+  key_name                    = var.instance_keys["key_name"]
 
-  tags = "${merge(
+  tags = merge(
     var.default_tags,
-    map(
-      "Name", "${format("%s%02d.%s", var.hostnames["frontend"], count.index + 1, var.domain)}"
-    )
-  )}"
+    {
+      "Name" = format(
+        "%s%02d.%s",
+        var.hostnames["frontend"],
+        count.index + 1,
+        var.domain,
+      )
+    },
+  )
 
   root_block_device {
-    delete_on_termination = "${var.instance["frontend_term"]}"
-    volume_size           = "${var.instance["frontend_size"]}"
-    volume_type           = "${var.instance["frontend_type"]}"
-    iops                  = "${var.instance["frontend_iops"]}"
+    delete_on_termination = var.instance["frontend_term"]
+    volume_size           = var.instance["frontend_size"]
+    volume_type           = var.instance["frontend_type"]
+    iops                  = var.instance["frontend_iops"]
   }
 
   connection {
-    host        = "${self.public_ip}"
-    user        = "${var.ami_user}"
-    private_key = "${file("${var.instance_keys["key_file"]}")}"
+    type        = "ssh"
+    host        = self.public_ip
+    user        = var.ami_user
+    private_key = file(var.instance_keys["key_file"])
   }
 
   provisioner "remote-exec" {
@@ -103,62 +120,67 @@ resource "aws_instance" "frontends" {
 
 resource "aws_eip" "frontends" {
   vpc      = true
-  count    = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
-  instance = "${element(aws_instance.frontends.*.id, count.index)}"
+  count    = var.create_chef_ha ? var.chef_frontend["count"] : 0
+  instance = element(aws_instance.frontends.*.id, count.index)
 
   # depends_on = ["aws_internet_gateway.main"]
 
-  tags = "${merge(
+  tags = merge(
     var.default_tags,
-    map(
-      "Name", "${format("%s%02d.%s", var.hostnames["frontend"], count.index + 1, var.domain)}"
-    )
-  )}"
+    {
+      "Name" = format(
+        "%s%02d.%s",
+        var.hostnames["frontend"],
+        count.index + 1,
+        var.domain,
+      )
+    },
+  )
 }
 
 resource "aws_route53_record" "backends" {
-  count   = "${var.create_chef_ha ? var.chef_backend["count"] : 0}"
-  zone_id = "${var.zone_id}"
-  name    = "${element(aws_instance.backends.*.tags.Name, count.index)}"
+  count   = var.create_chef_ha ? var.chef_backend["count"] : 0
+  zone_id = var.zone_id
+  name    = element(aws_instance.backends.*.tags.Name, count.index)
   type    = "A"
-  ttl     = "${var.r53_ttl}"
-  records = ["${element(aws_eip.backends.*.public_ip, count.index)}"]
+  ttl     = var.r53_ttl
+  records = [element(aws_eip.backends.*.public_ip, count.index)]
 }
 
 resource "aws_route53_record" "frontend" {
-  count   = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
-  zone_id = "${var.zone_id}"
-  name    = "${element(aws_instance.frontends.*.tags.Name, count.index)}"
+  count   = var.create_chef_ha ? var.chef_frontend["count"] : 0
+  zone_id = var.zone_id
+  name    = element(aws_instance.frontends.*.tags.Name, count.index)
   type    = "A"
-  ttl     = "${var.r53_ttl}"
-  records = ["${element(aws_eip.frontends.*.public_ip, count.index)}"]
+  ttl     = var.r53_ttl
+  records = [element(aws_eip.frontends.*.public_ip, count.index)]
 }
 
 resource "aws_route53_health_check" "frontend" {
-  count             = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
-  fqdn              = "${element(aws_instance.frontends.*.tags.Name, count.index)}"
+  count             = var.create_chef_ha ? var.chef_frontend["count"] : 0
+  fqdn              = element(aws_instance.frontends.*.tags.Name, count.index)
   port              = 443
   type              = "HTTPS"
   resource_path     = "/"
   failure_threshold = "5"
   request_interval  = "30"
 
-  tags = "${merge(
+  tags = merge(
     var.default_tags,
-    map(
-      "Name", "${var.deployment_name} ${element(aws_instance.frontends.*.tags.Name, count.index)} Health Check"
-    )
-  )}"
+    {
+      "Name" = "${var.deployment_name} ${element(aws_instance.frontends.*.tags.Name, count.index)} Health Check"
+    },
+  )
 }
 
 resource "null_resource" "create_cluster_leader" {
-  count      = "${var.create_chef_ha ? 1 : 0}"
-  depends_on = ["aws_eip.backends"]
+  count      = var.create_chef_ha ? 1 : 0
+  depends_on = [aws_eip.backends]
 
   connection {
-    host        = "${aws_eip.backends.0.public_ip}"
-    user        = "${var.ami_user}"
-    private_key = "${file("${var.instance_keys["key_file"]}")}"
+    host        = aws_eip.backends[0].public_ip
+    user        = var.ami_user
+    private_key = file(var.instance_keys["key_file"])
   }
 
   provisioner "remote-exec" {
@@ -171,8 +193,9 @@ resource "null_resource" "create_cluster_leader" {
   }
 
   # Copy back file
+  # Copy back file
   provisioner "local-exec" {
-    command = "mkdir -p ${path.module}/.chef && scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.backends.0.public_ip}:chef-backend-secrets.json ${path.module}/.chef/"
+    command = "mkdir -p ${path.module}/.chef && scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.backends[0].public_ip}:chef-backend-secrets.json ${path.module}/.chef/"
   }
 
   provisioner "remote-exec" {
@@ -184,13 +207,13 @@ resource "null_resource" "create_cluster_leader" {
 }
 
 resource "null_resource" "followers_join_cluster" {
-  count      = "${var.create_chef_ha ? var.chef_backend["count"] - 1 : 0}"
-  depends_on = ["null_resource.create_cluster_leader"]
+  count      = var.create_chef_ha ? var.chef_backend["count"] - 1 : 0
+  depends_on = [null_resource.create_cluster_leader]
 
   connection {
-    host        = "${element(aws_eip.backends.*.public_ip, count.index + 1)}"
-    user        = "${var.ami_user}"
-    private_key = "${file("${var.instance_keys["key_file"]}")}"
+    host        = element(aws_eip.backends.*.public_ip, count.index + 1)
+    user        = var.ami_user
+    private_key = file(var.instance_keys["key_file"])
   }
 
   provisioner "file" {
@@ -201,28 +224,23 @@ resource "null_resource" "followers_join_cluster" {
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
-
-      # FIXME: Allow chef-backend cluster leader enough time to fully start up
-      #        and for the cluster joining process to fully complete for each node
-      #        by sleeping 2 minutes for backend 2 and 4 minutes for backend 3
-      "sleep ${120 * (count.index + 1)}",
-
+      "sleep ${120 * count.index + 1}",
       "sudo mkdir -p /etc/chef-backend",
       "echo \"publish_address '${element(aws_eip.backends.*.private_ip, count.index + 1)}'\" | sudo tee /etc/chef-backend/chef-backend.rb",
-      "sudo chef-backend-ctl join-cluster ${aws_eip.backends.0.private_ip} --accept-license -s chef-backend-secrets.json -y --quiet",
+      "sudo chef-backend-ctl join-cluster ${aws_eip.backends[0].private_ip} --accept-license -s chef-backend-secrets.json -y --quiet",
       "sudo rm chef-backend-secrets.json",
     ]
   }
 }
 
 resource "null_resource" "chef_server_gen_frontend_config" {
-  count      = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
-  depends_on = ["null_resource.followers_join_cluster"]
+  count      = var.create_chef_ha ? var.chef_frontend["count"] : 0
+  depends_on = [null_resource.followers_join_cluster]
 
   connection {
-    host        = "${aws_eip.backends.0.public_ip}"
-    user        = "${var.ami_user}"
-    private_key = "${file("${var.instance_keys["key_file"]}")}"
+    host        = aws_eip.backends[0].public_ip
+    user        = var.ami_user
+    private_key = file(var.instance_keys["key_file"])
   }
 
   provisioner "remote-exec" {
@@ -233,18 +251,18 @@ resource "null_resource" "chef_server_gen_frontend_config" {
   }
 
   provisioner "local-exec" {
-    command = "scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.backends.0.public_ip}:chef-server.rb-${element(aws_instance.frontends.*.tags.Name, count.index)} ${path.module}/.chef/"
+    command = "scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.backends[0].public_ip}:chef-server.rb-${element(aws_instance.frontends.*.tags.Name, count.index)} ${path.module}/.chef/"
   }
 }
 
 resource "null_resource" "chef_server_upload_frontend_config" {
-  count      = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
-  depends_on = ["null_resource.chef_server_gen_frontend_config"]
+  count      = var.create_chef_ha ? var.chef_frontend["count"] : 0
+  depends_on = [null_resource.chef_server_gen_frontend_config]
 
   connection {
-    host        = "${element(aws_eip.frontends.*.public_ip, count.index)}"
-    user        = "${var.ami_user}"
-    private_key = "${file("${var.instance_keys["key_file"]}")}"
+    host        = element(aws_eip.frontends.*.public_ip, count.index)
+    user        = var.ami_user
+    private_key = file(var.instance_keys["key_file"])
   }
 
   provisioner "file" {
@@ -254,13 +272,13 @@ resource "null_resource" "chef_server_upload_frontend_config" {
 }
 
 resource "null_resource" "configure_first_frontend" {
-  count      = "${var.create_chef_ha ? 1 : 0}"
-  depends_on = ["null_resource.chef_server_upload_frontend_config"]
+  count      = var.create_chef_ha ? 1 : 0
+  depends_on = [null_resource.chef_server_upload_frontend_config]
 
   connection {
-    host        = "${aws_eip.frontends.0.public_ip}"
-    user        = "${var.ami_user}"
-    private_key = "${file("${var.instance_keys["key_file"]}")}"
+    host        = aws_eip.frontends[0].public_ip
+    user        = var.ami_user
+    private_key = file(var.instance_keys["key_file"])
   }
 
   provisioner "remote-exec" {
@@ -274,11 +292,11 @@ resource "null_resource" "configure_first_frontend" {
   }
 
   provisioner "local-exec" {
-    command = "scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.frontends.0.public_ip}:private-chef-secrets.json ${path.module}/.chef/"
+    command = "scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.frontends[0].public_ip}:private-chef-secrets.json ${path.module}/.chef/"
   }
 
   provisioner "local-exec" {
-    command = "scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.frontends.0.public_ip}:migration-level ${path.module}/.chef/"
+    command = "scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${aws_eip.frontends[0].public_ip}:migration-level ${path.module}/.chef/"
   }
 
   provisioner "remote-exec" {
@@ -290,13 +308,13 @@ resource "null_resource" "configure_first_frontend" {
 }
 
 resource "null_resource" "configure_other_frontends" {
-  count      = "${var.create_chef_ha ? var.chef_frontend["count"] - 1 : 0}"
-  depends_on = ["null_resource.configure_first_frontend"]
+  count      = var.create_chef_ha ? var.chef_frontend["count"] - 1 : 0
+  depends_on = [null_resource.configure_first_frontend]
 
   connection {
-    host        = "${element(aws_eip.frontends.*.public_ip, count.index + 1)}"
-    user        = "${var.ami_user}"
-    private_key = "${file("${var.instance_keys["key_file"]}")}"
+    host        = element(aws_eip.frontends.*.public_ip, count.index + 1)
+    user        = var.ami_user
+    private_key = file(var.instance_keys["key_file"])
   }
 
   provisioner "file" {
@@ -324,13 +342,13 @@ resource "null_resource" "configure_other_frontends" {
 }
 
 resource "null_resource" "configure_data_collection" {
-  count      = "${var.create_chef_ha ? var.chef_frontend["count"]: 0}"
-  depends_on = ["null_resource.configure_other_frontends"]
+  count      = var.create_chef_ha ? var.chef_frontend["count"] : 0
+  depends_on = [null_resource.configure_other_frontends]
 
   connection {
-    host        = "${element(aws_eip.frontends.*.public_ip, count.index)}"
-    user        = "${var.ami_user}"
-    private_key = "${file("${var.instance_keys["key_file"]}")}"
+    host        = element(aws_eip.frontends.*.public_ip, count.index)
+    user        = var.ami_user
+    private_key = file(var.instance_keys["key_file"])
   }
 
   provisioner "remote-exec" {

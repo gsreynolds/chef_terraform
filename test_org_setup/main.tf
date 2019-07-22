@@ -4,14 +4,14 @@ locals {
 
 resource "null_resource" "chef_server_create_test_org" {
   triggers = {
-    chef_server_ids = "${join(",", var.chef_server_ids)}"
-    server_ready    = "${join(",", var.server_ready)}"
+    chef_server_ids = join(",", var.chef_server_ids)
+    server_ready    = join(",", var.server_ready)
   }
 
   connection {
-    host        = "${var.chef_server_public_ip}"
-    user        = "${var.ami_user}"
-    private_key = "${file("${var.instance_keys["key_file"]}")}"
+    host        = var.chef_server_public_ip
+    user        = var.ami_user
+    private_key = file(var.instance_keys["key_file"])
   }
 
   provisioner "remote-exec" {
@@ -22,16 +22,15 @@ resource "null_resource" "chef_server_create_test_org" {
       "sudo chef-server-ctl grant-server-admin-permissions admin",
     ]
   }
-
   # FIXME: scp admin.pem
 }
 
 resource "null_resource" "get_validator_key" {
-  depends_on = ["null_resource.chef_server_create_test_org"]
+  depends_on = [null_resource.chef_server_create_test_org]
 
   triggers = {
-    chef_server_ids = "${join(",", var.chef_server_ids)}"
-    server_ready    = "${join(",", var.server_ready)}"
+    chef_server_ids = join(",", var.chef_server_ids)
+    server_ready    = join(",", var.server_ready)
   }
 
   provisioner "local-exec" {
@@ -40,13 +39,13 @@ resource "null_resource" "get_validator_key" {
 }
 
 data "local_file" "test_chef_validator" {
-  depends_on = ["null_resource.get_validator_key"]
-  filename   = "${local.validator_path}"
+  depends_on = [null_resource.get_validator_key]
+  filename   = local.validator_path
 }
 
 resource "aws_ssm_parameter" "test_chef_validator" {
   name      = "${var.validator_key_path}chef_validator"
   type      = "SecureString"
   overwrite = true
-  value     = "${chomp("${data.local_file.test_chef_validator.content}")}"
+  value     = chomp(data.local_file.test_chef_validator.content)
 }
