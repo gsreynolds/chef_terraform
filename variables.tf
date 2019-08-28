@@ -192,8 +192,8 @@ variable "effortless_clients" {
   default = {
     count             = 0
     origin            = "gsreynolds"
-    effortless_audit  = "effortless_audit"
-    effortless_config = "effortless_config"
+    effortless_audit  = "inspec-linux-audit"
+    effortless_config = "linux-hardening"
   }
 }
 
