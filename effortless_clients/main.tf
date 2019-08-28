@@ -14,6 +14,24 @@ data "template_file" "hab-sup" {
   }
 }
 
+data "template_file" "audit-user-toml" {
+  template = "${file("${path.module}/templates/audit-user.toml.tpl")}"
+
+  vars = {
+    automate_fqdn        = var.automate_fqdn
+    data_collector_token = var.data_collector_token
+  }
+}
+
+data "template_file" "config-user-toml" {
+  template = "${file("${path.module}/templates/config-user.toml.tpl")}"
+
+  vars = {
+    automate_fqdn        = var.automate_fqdn
+    data_collector_token = var.data_collector_token
+  }
+}
+
 resource "aws_instance" "effortless_clients" {
   count = "${var.instance_count}"
 
@@ -52,6 +70,9 @@ resource "aws_instance" "effortless_clients" {
       "set -Eeu",
       "sudo apt update && sudo apt upgrade -y",
       "sudo apt update && sudo apt upgrade -y && sudo apt install -y ntp python3 python3-pip",
+      "sudo hostname ${self.tags.Name}",
+      "sudo hostnamectl set-hostname ${self.tags.Name}",
+      "echo ${self.tags.Name} | sudo tee /etc/hostname",
     ]
   }
 
@@ -60,15 +81,16 @@ resource "aws_instance" "effortless_clients" {
   #   service_type = "systemd"
 
   #   service {
-  #     name = "${var.origin}/${var.effortless_audit}"
-  #     # user_toml = "${file("conf/redis.toml")}"
+  #     name      = "${var.origin}/${var.effortless_audit}"
+  #     user_toml = "${data.template_file.audit-user-toml.rendered}"
   #   }
 
   #   service {
-  #     name = "${var.origin}/${var.effortless_config}"
-  #     # user_toml = "${file("conf/redis.toml")}"
+  #     name      = "${var.origin}/${var.effortless_config}"
+  #     user_toml = "${data.template_file.config-user-toml.rendered}"
   #   }
   # }
+
   provisioner "file" {
     content     = "${data.template_file.hab-sup.rendered}"
     destination = "hab-sup.service"
@@ -79,14 +101,23 @@ resource "aws_instance" "effortless_clients" {
     destination = "install-hab.sh"
   }
 
+  provisioner "file" {
+    content     = "${data.template_file.audit-user-toml.rendered}"
+    destination = "audit-user.toml"
+  }
+
+  provisioner "file" {
+    content     = "${data.template_file.config-user-toml.rendered}"
+    destination = "config-user.toml"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
-      "sudo hostname ${self.tags.Name}",
-      "sudo hostnamectl set-hostname ${self.tags.Name}",
-      "echo ${self.tags.Name} | sudo tee /etc/hostname",
       "chmod +x install-hab.sh",
       "sudo ./install-hab.sh",
+      "sudo mkdir -p /hab/user/${var.effortless_audit}/config && sudo mv audit-user.toml /hab/user/${var.effortless_audit}/config/user.toml",
+      "sudo mkdir -p /hab/user/${var.effortless_config}/config && sudo mv config-user.toml /hab/user/${var.effortless_config}/config/user.toml",
       "sudo hab svc load ${var.origin}/${var.effortless_audit} --strategy at-once",
       "sudo hab svc load ${var.origin}/${var.effortless_config} --strategy at-once"
     ]
