@@ -1,14 +1,33 @@
-provider = {
-  region  = "eu-west-1"
+aws_provider = {
+  region = "eu-west-1"
   profile = "profilename"
 }
 
 application_name = "My Chef Automate"
 
-create_chef_ha = true
+create_chef_ha     = false
+create_chef_server = true
+
+chef_backend = {
+  count   = 3
+  version = "2.0.30"
+}
+
+chef_frontend = {
+  count   = 3
+  version = "13.0.17"
+}
 
 chef_clients = {
-  count = 3
+  count   = 3
+  version = "15.2.20"
+}
+
+effortless_clients = {
+  count             = 3
+  origin            = "myorigin"
+  effortless_audit  = "my-linux-audit"
+  effortless_config = "my-linux-config"
 }
 
 default_tags = {
@@ -36,11 +55,12 @@ ssh_whitelist_cidrs = ["0.0.0.0/0"]
 domain = "example.com"
 
 hostnames = {
-  chef_server     = "chef"
-  automate_server = "automate"
-  chef_client     = "node"
-  backend         = "chef-be"
-  frontend        = "chef-fe"
+  chef_server       = "chef"
+  automate_server   = "automate"
+  chef_client       = "node"
+  effortless_client = "effortless-node"
+  backend           = "chef-be"
+  frontend          = "chef-fe"
 }
 
 instance_keys = {
@@ -48,14 +68,6 @@ instance_keys = {
   key_file = "~/.ssh/ssh-key"
 }
 
-chef_frontend = {
-  count = 3
-}
-
-chef_backend = {
-  count = 3
-}
-
-log_bucket = "my-chef-logs"
+log_bucket = "chef-logs"
 
 validator_key_path = "/my_chef/test/"
