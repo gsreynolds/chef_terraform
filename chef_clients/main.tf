@@ -65,7 +65,7 @@ resource "aws_instance" "chef_clients" {
       "echo 'node_name  \"${self.tags.Name}\"' | sudo tee -a /etc/chef/client.rb",
       "echo 'ssl_verify_mode :verify_peer' | sudo tee -a /etc/chef/client.rb",
       "sudo mv first-boot.json /etc/chef/first-boot.json",
-      "sudo chef-client -j /etc/chef/first-boot.json",
+      "sudo chef-client -j /etc/chef/first-boot.json --chef-license=accept",
     ]
   }
 }

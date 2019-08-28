@@ -182,7 +182,7 @@ variable "chef_clients" {
 
   default = {
     count   = 0
-    version = "14.13.11"
+    version = "15.2.20"
   }
 }
 
