@@ -109,7 +109,7 @@ module "chef_automate2" {
 module "chef_server" {
   source = "./chef_server"
 
-  create_chef_ha = var.create_chef_ha
+  create_chef_server = var.create_chef_server
 
   ami                     = data.aws_ami.ubuntu.id
   ami_user                = var.ami_user
@@ -205,7 +205,6 @@ module "chef_clients" {
   default_tags                             = var.default_tags
   domain                                   = var.domain
   hostnames                                = var.hostnames
-  https_security_group_id                  = module.security_groups.https_security_group_id
   instance                                 = var.instance
   instance_keys                            = var.instance_keys
   aws_provider                             = var.aws_provider
@@ -215,3 +214,24 @@ module "chef_clients" {
   zone_id                                  = data.aws_route53_zone.zone.id
 }
 
+module "effortless_clients" {
+  source = "./effortless_clients"
+
+  ami                   = data.aws_ami.ubuntu.id
+  ami_user              = var.ami_user
+  az_subnet_ids         = module.vpc.public_subnets
+  origin                = var.effortless_clients["origin"]
+  effortless_audit      = var.effortless_clients["effortless_audit"]
+  effortless_config     = var.effortless_clients["effortless_config"]
+  automate_fqdn         = module.chef_alb.automate_alb_fqdn
+  instance_count        = var.effortless_clients["count"]
+  default_tags          = var.default_tags
+  domain                = var.domain
+  hostnames             = var.hostnames
+  instance              = var.instance
+  instance_keys         = var.instance_keys
+  aws_provider          = var.aws_provider
+  r53_ttl               = var.r53_ttl
+  ssh_security_group_id = module.security_groups.ssh_security_group_id
+  zone_id               = data.aws_route53_zone.zone.id
+}

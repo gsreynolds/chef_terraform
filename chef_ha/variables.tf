@@ -1,5 +1,4 @@
 variable "create_chef_ha" {
-  description = "Create Chef Server in HA topology if true, standalone topology if false"
   default     = true
 }
 

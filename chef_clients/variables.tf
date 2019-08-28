@@ -39,7 +39,6 @@ variable "az_subnet_ids" {
 }
 
 variable "ssh_security_group_id" {}
-variable "https_security_group_id" {}
 
 variable "instance" {
   type        = "map"

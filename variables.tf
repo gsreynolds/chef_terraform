@@ -13,8 +13,13 @@ variable "application_name" {
   default     = "Chef Automate"
 }
 
+variable "create_chef_server" {
+  description = "Create Chef Server in standalone topology"
+  default     = false
+}
+
 variable "create_chef_ha" {
-  description = "Create Chef Server in HA topology if true, standalone topology if false"
+  description = "Create Chef Server in HA topology if true"
   default     = false
 }
 
@@ -105,9 +110,10 @@ variable "hostnames" {
   description = "Instance hostname prefix"
 
   default = {
-    chef_server     = "chef"
-    automate_server = "automate"
-    chef_client     = "node"
+    chef_server       = "chef"
+    automate_server   = "automate"
+    chef_client       = "node"
+    effortless_client = "effortless-node"
   }
 }
 
@@ -136,8 +142,8 @@ variable "validator_key_path" {
 }
 
 variable "chef_backend" {
-  type        = object({
-    count = number
+  type = object({
+    count   = number
     version = string
   })
   description = "Chef backend settings"
@@ -149,8 +155,8 @@ variable "chef_backend" {
 }
 
 variable "chef_frontend" {
-  type        = object({
-    count = number
+  type = object({
+    count   = number
     version = string
   })
   description = "Chef frontend settings"
@@ -162,8 +168,8 @@ variable "chef_frontend" {
 }
 
 variable "chef_clients" {
-  type        = object({
-    count = number
+  type = object({
+    count   = number
     version = string
   })
   description = "Chef Client settings"
@@ -171,6 +177,23 @@ variable "chef_clients" {
   default = {
     count   = 0
     version = "14.13.11"
+  }
+}
+
+variable "effortless_clients" {
+  type = object({
+    count             = number
+    origin            = string
+    effortless_audit  = string
+    effortless_config = string
+  })
+  description = "Effortless Client settings"
+
+  default = {
+    count             = 0
+    origin            = "gsreynolds"
+    effortless_audit  = "effortless_audit"
+    effortless_config = "effortless_config"
   }
 }
 

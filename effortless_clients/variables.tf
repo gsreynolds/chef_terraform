@@ -1,8 +1,7 @@
-variable "create_chef_server" {
-  default     = false
+variable "instance_count" {
+  default = 0
 }
 
-variable "deployment_name" {}
 variable "ami" {}
 
 variable "ami_user" {
@@ -10,6 +9,16 @@ variable "ami_user" {
   description = "Default username"
 
   default = "ubuntu"
+}
+
+variable "aws_provider" {
+  type        = "map"
+  description = "AWS provider settings"
+
+  default = {
+    region  = ""
+    profile = ""
+  }
 }
 
 variable "default_tags" {
@@ -21,12 +30,13 @@ variable "default_tags" {
   }
 }
 
-variable "chef_server_version" {}
+variable "az_subnet_ids" {
+  type        = "list"
+  description = "Availability zone subnet IDs"
+  default     = []
+}
 
 variable "ssh_security_group_id" {}
-variable "https_security_group_id" {}
-
-variable "subnet" {}
 
 variable "instance" {
   type        = "map"
@@ -34,12 +44,12 @@ variable "instance" {
 
   default = {
     ebs_optimized      = true
-    chef_server_flavor = "m5.large"
-    chef_server_iops   = 0
-    chef_server_public = true
-    chef_server_size   = 40
-    chef_server_term   = true
-    chef_server_type   = "gp2"
+    effortless_client_flavor = "t2.medium"
+    effortless_client_iops   = 0
+    effortless_client_public = true
+    effortless_client_size   = 10
+    effortless_client_term   = true
+    effortless_client_type   = "gp2"
   }
 }
 
@@ -48,7 +58,7 @@ variable "hostnames" {
   description = "Instance hostname prefix"
 
   default = {
-    chef_server = "chef"
+    effortless_client = "effortless-node"
   }
 }
 
@@ -75,7 +85,8 @@ variable "r53_ttl" {
 
   default = "180"
 }
+variable "automate_fqdn" {}
+variable "origin" {}
+variable "effortless_audit" {}
+variable "effortless_config" {}
 
-variable automate_fqdn {}
-
-variable "data_collector_token" {}
