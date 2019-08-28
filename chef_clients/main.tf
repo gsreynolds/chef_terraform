@@ -63,7 +63,7 @@ resource "aws_instance" "chef_clients" {
       "echo 'validation_client_name \"test-validator\"' | sudo tee -a /etc/chef/client.rb",
       "echo 'validation_key \"/etc/chef/validator.pem\"' | sudo tee -a /etc/chef/client.rb",
       "echo 'node_name  \"${self.tags.Name}\"' | sudo tee -a /etc/chef/client.rb",
-      "echo 'ssl_verify_mode :verify_none' | sudo tee -a /etc/chef/client.rb",
+      "echo 'ssl_verify_mode :verify_peer' | sudo tee -a /etc/chef/client.rb",
       "sudo mv first-boot.json /etc/chef/first-boot.json",
       "sudo chef-client -j /etc/chef/first-boot.json",
     ]
