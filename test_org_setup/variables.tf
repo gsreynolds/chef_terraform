@@ -1,3 +1,7 @@
+variable "create_test_org" {
+  default = 0
+}
+
 variable "ami_user" {
   type        = "string"
   description = "Default username"

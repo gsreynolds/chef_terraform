@@ -2,6 +2,7 @@
 # $ aws ssm put-parameter --name "chef/test/chef_validator" --type "SecureString" --overwrite --value "$(cat validator.pem)"
 
 resource "aws_iam_role" "chef_validator" {
+  count       = var.create_unattended_registration
   name        = "chef_validator"
   description = "IAM role to allow nodes to get Chef Validator key for Test org"
 
@@ -23,7 +24,8 @@ EOF
 }
 
 resource "aws_iam_policy" "chef_validator" {
-  name        = "chef_validator"
+  count = var.create_unattended_registration
+  name = "chef_validator"
   description = "IAM policy to allow nodes to get Chef Validator key for Test org"
 
   policy = <<EOF
@@ -50,11 +52,13 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "chef_validator_attach" {
-  role       = "${aws_iam_role.chef_validator.name}"
-  policy_arn = "${aws_iam_policy.chef_validator.arn}"
+  count      = var.create_unattended_registration
+  role       = "${aws_iam_role.chef_validator[0].name}"
+  policy_arn = "${aws_iam_policy.chef_validator[0].arn}"
 }
 
 resource "aws_iam_instance_profile" "chef_validator" {
-  name = "chef_validator"
-  role = "${aws_iam_role.chef_validator.name}"
+  count = var.create_unattended_registration
+  name  = "chef_validator"
+  role  = "${aws_iam_role.chef_validator[0].name}"
 }

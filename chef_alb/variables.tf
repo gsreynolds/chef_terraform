@@ -38,10 +38,6 @@ variable "chef_target_ids" {
   default = []
 }
 
-variable "chef_target_count" {
-  default = "1"
-}
-
 variable "automate_target_ids" {
   type = "list"
 

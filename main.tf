@@ -71,7 +71,6 @@ module "chef_alb" {
 
   account_id              = data.aws_caller_identity.current.account_id
   subnets                 = module.vpc.public_subnets
-  chef_target_count       = var.create_chef_ha ? var.chef_frontend["count"] : 1
   deployment_name         = local.deployment_name
   domain                  = var.domain
   hostnames               = var.hostnames
@@ -159,6 +158,8 @@ module "chef_ha" {
 module "chef_unattended_registration" {
   source = "./chef_unattended_registration"
 
+  create_unattended_registration = var.create_chef_ha || var.create_chef_server ? 1 : 0
+
   account_id         = data.aws_caller_identity.current.account_id
   aws_provider       = var.aws_provider
   validator_key_path = var.validator_key_path
@@ -166,6 +167,8 @@ module "chef_unattended_registration" {
 
 module "test_org_setup" {
   source = "./test_org_setup"
+
+  create_test_org = var.create_chef_ha || var.create_chef_server ? 1 : 0
 
   # server_ready is an inter-module dependency workaround to ensure that the org doesn't get created until chef server/all front ends are configured
   server_ready = concat(
@@ -180,12 +183,9 @@ module "test_org_setup" {
     module.chef_ha.frontend_ids,
     module.chef_server.chef_server_id,
   )
-  chef_server_public_ip = element(
-    concat(
-      module.chef_ha.chef_server_public_ip,
-      module.chef_server.chef_server_public_ip,
-    ),
-    0,
+  chef_server_public_ip = concat(
+    module.chef_ha.chef_server_public_ip,
+    module.chef_server.chef_server_public_ip,
   )
   data_collector_token = module.chef_automate2.data_collector_token
   instance_keys        = var.instance_keys

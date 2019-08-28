@@ -16,3 +16,4 @@ variable "aws_provider" {
 }
 
 variable "account_id" {}
+variable "create_unattended_registration" {}

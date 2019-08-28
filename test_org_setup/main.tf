@@ -3,13 +3,15 @@ locals {
 }
 
 resource "null_resource" "chef_server_create_test_org" {
+  count = var.create_test_org
+
   triggers = {
     chef_server_ids = "${join(",", var.chef_server_ids)}"
     server_ready    = "${join(",", var.server_ready)}"
   }
 
   connection {
-    host        = "${var.chef_server_public_ip}"
+    host        = "${element(var.chef_server_public_ip, 0)}"
     user        = "${var.ami_user}"
     private_key = "${file("${var.instance_keys["key_file"]}")}"
   }
@@ -27,6 +29,7 @@ resource "null_resource" "chef_server_create_test_org" {
 }
 
 resource "null_resource" "get_validator_key" {
+  count      = var.create_test_org
   depends_on = ["null_resource.chef_server_create_test_org"]
 
   triggers = {
@@ -35,18 +38,20 @@ resource "null_resource" "get_validator_key" {
   }
 
   provisioner "local-exec" {
-    command = "mkdir -p ${path.module}/.chef && scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${var.chef_server_public_ip}:test-validator.pem ${local.validator_path}"
+    command = "mkdir -p ${path.module}/.chef && scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${element(var.chef_server_public_ip, 0)}:test-validator.pem ${local.validator_path}"
   }
 }
 
 data "local_file" "test_chef_validator" {
+  count      = var.create_test_org
   depends_on = ["null_resource.get_validator_key"]
   filename   = "${local.validator_path}"
 }
 
 resource "aws_ssm_parameter" "test_chef_validator" {
+  count     = var.create_test_org
   name      = "${var.validator_key_path}chef_validator"
   type      = "SecureString"
   overwrite = true
-  value     = "${chomp("${data.local_file.test_chef_validator.content}")}"
+  value     = "${chomp("${data.local_file.test_chef_validator[0].content}")}"
 }
