@@ -116,8 +116,11 @@ resource "aws_instance" "effortless_clients" {
       "set -Eeu",
       "chmod +x install-hab.sh",
       "sudo ./install-hab.sh",
-      "sudo mkdir -p /hab/user/${var.effortless_audit}/config && sudo mv audit-user.toml /hab/user/${var.effortless_audit}/config/user.toml",
-      "sudo mkdir -p /hab/user/${var.effortless_config}/config && sudo mv config-user.toml /hab/user/${var.effortless_config}/config/user.toml",
+      "sudo mkdir -p /hab/user/${var.effortless_audit}/config /hab/user/${var.effortless_config}/config",
+      "sudo mv audit-user.toml /hab/user/${var.effortless_audit}/config/user.toml",
+      "sudo mv config-user.toml /hab/user/${var.effortless_config}/config/user.toml",
+      "sudo chown -R hab:hab /hab/user",
+      "sleep 30",
       "sudo hab svc load ${var.origin}/${var.effortless_audit} --strategy at-once",
       "sudo hab svc load ${var.origin}/${var.effortless_config} --strategy at-once"
     ]
