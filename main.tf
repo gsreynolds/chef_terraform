@@ -225,6 +225,7 @@ module "effortless_clients" {
   effortless_config     = var.effortless_clients["effortless_config"]
   automate_fqdn         = module.chef_alb.automate_alb_fqdn
   instance_count        = var.effortless_clients["count"]
+  data_collector_token  = module.chef_automate2.data_collector_token
   default_tags          = var.default_tags
   domain                = var.domain
   hostnames             = var.hostnames

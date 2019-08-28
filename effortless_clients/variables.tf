@@ -43,7 +43,7 @@ variable "instance" {
   description = "AWS Instance settings"
 
   default = {
-    ebs_optimized      = true
+    ebs_optimized            = true
     effortless_client_flavor = "t2.medium"
     effortless_client_iops   = 0
     effortless_client_public = true
@@ -89,4 +89,5 @@ variable "automate_fqdn" {}
 variable "origin" {}
 variable "effortless_audit" {}
 variable "effortless_config" {}
+variable "data_collector_token" {}
 
