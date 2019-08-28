@@ -1,5 +1,5 @@
 variable "create_chef_ha" {
-  default     = true
+  default = true
 }
 
 variable "deployment_name" {}
@@ -115,7 +115,7 @@ variable "chef_backend" {
 
   default = {
     count   = 3
-    version = "2.0.1"
+    version = "2.0.30"
   }
 }
 
@@ -125,7 +125,7 @@ variable "chef_frontend" {
 
   default = {
     count   = 3
-    version = "12.19.31"
+    version = "13.0.17"
   }
 }
 
