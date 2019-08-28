@@ -86,7 +86,7 @@ resource "aws_instance" "effortless_clients" {
       "sudo hostnamectl set-hostname ${self.tags.Name}",
       "echo ${self.tags.Name} | sudo tee /etc/hostname",
       "chmod +x install-hab.sh",
-      "sudo install-hab.sh",
+      "sudo ./install-hab.sh",
       "sudo hab svc load ${var.origin}/${var.effortless_audit} --strategy at-once",
       "sudo hab svc load ${var.origin}/${var.effortless_config} --strategy at-once"
     ]
