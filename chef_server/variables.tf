@@ -1,5 +1,5 @@
 variable "create_chef_server" {
-  default     = false
+  default = false
 }
 
 variable "deployment_name" {}

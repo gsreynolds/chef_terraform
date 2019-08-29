@@ -324,7 +324,7 @@ resource "null_resource" "configure_other_frontends" {
 }
 
 resource "null_resource" "configure_data_collection" {
-  count      = "${var.create_chef_ha ? var.chef_frontend["count"]: 0}"
+  count      = "${var.create_chef_ha ? var.chef_frontend["count"] : 0}"
   depends_on = ["null_resource.configure_other_frontends"]
 
   connection {
