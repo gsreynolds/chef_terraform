@@ -1,7 +1,8 @@
-variable "deployment_name" {}
+variable "deployment_name" {
+}
 
 variable "default_tags" {
-  type        = "map"
+  type        = map(string)
   description = "Default resource tags"
 
   default = {
@@ -21,31 +22,38 @@ variable "log_bucket" {
 }
 
 variable "r53_ttl" {
-  type        = "string"
+  type        = string
   description = "DNS record TTLS"
 
   default = "180"
 }
 
-variable "zone_id" {}
-variable "account_id" {}
-variable "vpc_id" {}
-variable "https_security_group_id" {}
+variable "zone_id" {
+}
+
+variable "account_id" {
+}
+
+variable "vpc_id" {
+}
+
+variable "https_security_group_id" {
+}
 
 variable "chef_target_ids" {
-  type = "list"
+  type = list(string)
 
   default = []
 }
 
 variable "automate_target_ids" {
-  type = "list"
+  type = list(string)
 
   default = []
 }
 
 variable "hostnames" {
-  type        = "map"
+  type        = map(string)
   description = "Instance hostname prefix"
 
   default = {
@@ -60,7 +68,7 @@ variable "domain" {
 }
 
 variable "subnets" {
-  type        = "list"
+  type        = list(string)
   description = "Subnet IDs"
   default     = []
 }

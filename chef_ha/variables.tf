@@ -2,18 +2,21 @@ variable "create_chef_ha" {
   default = true
 }
 
-variable "deployment_name" {}
-variable "ami" {}
+variable "deployment_name" {
+}
+
+variable "ami" {
+}
 
 variable "ami_user" {
-  type        = "string"
+  type        = string
   description = "Default username"
 
   default = "ubuntu"
 }
 
 variable "aws_provider" {
-  type        = "map"
+  type        = map(string)
   description = "AWS provider settings"
 
   default = {
@@ -28,7 +31,7 @@ variable "application_name" {
 }
 
 variable "default_tags" {
-  type        = "map"
+  type        = map(string)
   description = "Default resource tags"
 
   default = {
@@ -36,12 +39,17 @@ variable "default_tags" {
   }
 }
 
-variable "ssh_security_group_id" {}
-variable "https_security_group_id" {}
-variable "backend_security_group_id" {}
+variable "ssh_security_group_id" {
+}
+
+variable "https_security_group_id" {
+}
+
+variable "backend_security_group_id" {
+}
 
 variable "vpc" {
-  type        = "map"
+  type        = map(string)
   description = "VPC CIDR block"
 
   default = {
@@ -49,16 +57,17 @@ variable "vpc" {
   }
 }
 
-variable "vpc_id" {}
+variable "vpc_id" {
+}
 
 variable "az_subnet_ids" {
-  type        = "list"
+  type        = list(string)
   description = "Availability zone subnet IDs"
   default     = []
 }
 
 variable "ssh_whitelist_cidrs" {
-  type        = "list"
+  type        = list(string)
   description = "List of CIDRs to allow SSH"
   default     = ["0.0.0.0/0"]
 }
@@ -69,7 +78,7 @@ variable "domain" {
 }
 
 variable "instance_keys" {
-  type        = "map"
+  type        = map(string)
   description = ""
 
   default = {
@@ -79,7 +88,7 @@ variable "instance_keys" {
 }
 
 variable "instance" {
-  type        = "map"
+  type        = map(string)
   description = "AWS Instance settings"
 
   default = {
@@ -100,7 +109,7 @@ variable "instance" {
 }
 
 variable "hostnames" {
-  type        = "map"
+  type        = map(string)
   description = "Instance hostname prefix"
 
   default = {
@@ -110,7 +119,7 @@ variable "hostnames" {
 }
 
 variable "chef_backend" {
-  type        = "map"
+  type        = map(string)
   description = "Chef backend settings"
 
   default = {
@@ -120,7 +129,7 @@ variable "chef_backend" {
 }
 
 variable "chef_frontend" {
-  type        = "map"
+  type        = map(string)
   description = "Chef frontend settings"
 
   default = {
@@ -130,15 +139,20 @@ variable "chef_frontend" {
 }
 
 variable "r53_ttl" {
-  type        = "string"
+  type        = string
   description = "DNS record TTLS"
 
   default = "180"
 }
 
-variable "zone_id" {}
-variable "account_id" {}
+variable "zone_id" {
+}
 
-variable automate_fqdn {}
+variable "account_id" {
+}
 
-variable "data_collector_token" {}
+variable "automate_fqdn" {
+}
+
+variable "data_collector_token" {
+}

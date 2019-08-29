@@ -3,14 +3,14 @@ variable "create_test_org" {
 }
 
 variable "ami_user" {
-  type        = "string"
+  type        = string
   description = "Default username"
 
   default = "ubuntu"
 }
 
 variable "instance_keys" {
-  type        = "map"
+  type        = map(string)
   description = ""
 
   default = {
@@ -19,28 +19,33 @@ variable "instance_keys" {
   }
 }
 
-variable "chef_server_public_ip" {}
-variable "automate_server_public_ip" {}
+variable "chef_server_public_ip" {
+}
 
-variable automate_fqdn {}
+variable "automate_server_public_ip" {
+}
+
+variable "automate_fqdn" {
+}
 
 variable "chef_server_ids" {
-  type = "list"
+  type = list(string)
 
   default = []
 }
 
 variable "validator_key_path" {
-  type        = "string"
+  type        = string
   description = "Path to org validator key in SSM"
 
   default = "/chef/test/"
 }
 
-variable "data_collector_token" {}
+variable "data_collector_token" {
+}
 
 variable "server_ready" {
-  type = "list"
+  type = list(string)
 
   default = []
 }

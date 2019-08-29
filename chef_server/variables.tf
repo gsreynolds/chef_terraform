@@ -2,18 +2,21 @@ variable "create_chef_server" {
   default = false
 }
 
-variable "deployment_name" {}
-variable "ami" {}
+variable "deployment_name" {
+}
+
+variable "ami" {
+}
 
 variable "ami_user" {
-  type        = "string"
+  type        = string
   description = "Default username"
 
   default = "ubuntu"
 }
 
 variable "default_tags" {
-  type        = "map"
+  type        = map(string)
   description = "Default resource tags"
 
   default = {
@@ -21,15 +24,20 @@ variable "default_tags" {
   }
 }
 
-variable "chef_server_version" {}
+variable "chef_server_version" {
+}
 
-variable "ssh_security_group_id" {}
-variable "https_security_group_id" {}
+variable "ssh_security_group_id" {
+}
 
-variable "subnet" {}
+variable "https_security_group_id" {
+}
+
+variable "subnet" {
+}
 
 variable "instance" {
-  type        = "map"
+  type        = map(string)
   description = "AWS Instance settings"
 
   default = {
@@ -44,7 +52,7 @@ variable "instance" {
 }
 
 variable "hostnames" {
-  type        = "map"
+  type        = map(string)
   description = "Instance hostname prefix"
 
   default = {
@@ -53,7 +61,7 @@ variable "hostnames" {
 }
 
 variable "instance_keys" {
-  type        = "map"
+  type        = map(string)
   description = ""
 
   default = {
@@ -67,15 +75,18 @@ variable "domain" {
   default     = ""
 }
 
-variable "zone_id" {}
+variable "zone_id" {
+}
 
 variable "r53_ttl" {
-  type        = "string"
+  type        = string
   description = "DNS record TTLS"
 
   default = "180"
 }
 
-variable automate_fqdn {}
+variable "automate_fqdn" {
+}
 
-variable "data_collector_token" {}
+variable "data_collector_token" {
+}

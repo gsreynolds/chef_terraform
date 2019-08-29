@@ -32,7 +32,7 @@ resource "aws_iam_policy" "chef_validator" {
 {
     "Version": "2012-10-17",
     "Statement": [
-{
+        {
             "Effect": "Allow",
             "Action": [
                 "ssm:DescribeParameters"
@@ -47,18 +47,18 @@ resource "aws_iam_policy" "chef_validator" {
             "Resource": "arn:aws:ssm:${var.aws_provider["region"]}:${var.account_id}:parameter${var.validator_key_path}*"
         }
     ]
-}
+  }
 EOF
 }
 
 resource "aws_iam_role_policy_attachment" "chef_validator_attach" {
-  count      = var.create_unattended_registration
-  role       = "${aws_iam_role.chef_validator[0].name}"
-  policy_arn = "${aws_iam_policy.chef_validator[0].arn}"
+count      = var.create_unattended_registration
+role       = aws_iam_role.chef_validator[0].name
+policy_arn = aws_iam_policy.chef_validator[0].arn
 }
 
 resource "aws_iam_instance_profile" "chef_validator" {
-  count = var.create_unattended_registration
-  name  = "chef_validator"
-  role  = "${aws_iam_role.chef_validator[0].name}"
+count = var.create_unattended_registration
+name  = "chef_validator"
+role  = aws_iam_role.chef_validator[0].name
 }

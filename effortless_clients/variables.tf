@@ -2,17 +2,18 @@ variable "instance_count" {
   default = 0
 }
 
-variable "ami" {}
+variable "ami" {
+}
 
 variable "ami_user" {
-  type        = "string"
+  type        = string
   description = "Default username"
 
   default = "ubuntu"
 }
 
 variable "aws_provider" {
-  type        = "map"
+  type        = map(string)
   description = "AWS provider settings"
 
   default = {
@@ -22,7 +23,7 @@ variable "aws_provider" {
 }
 
 variable "default_tags" {
-  type        = "map"
+  type        = map(string)
   description = "Default resource tags"
 
   default = {
@@ -31,15 +32,16 @@ variable "default_tags" {
 }
 
 variable "az_subnet_ids" {
-  type        = "list"
+  type        = list(string)
   description = "Availability zone subnet IDs"
   default     = []
 }
 
-variable "ssh_security_group_id" {}
+variable "ssh_security_group_id" {
+}
 
 variable "instance" {
-  type        = "map"
+  type        = map(string)
   description = "AWS Instance settings"
 
   default = {
@@ -54,7 +56,7 @@ variable "instance" {
 }
 
 variable "hostnames" {
-  type        = "map"
+  type        = map(string)
   description = "Instance hostname prefix"
 
   default = {
@@ -63,7 +65,7 @@ variable "hostnames" {
 }
 
 variable "instance_keys" {
-  type        = "map"
+  type        = map(string)
   description = ""
 
   default = {
@@ -77,17 +79,27 @@ variable "domain" {
   default     = ""
 }
 
-variable "zone_id" {}
+variable "zone_id" {
+}
 
 variable "r53_ttl" {
-  type        = "string"
+  type        = string
   description = "DNS record TTLS"
 
   default = "180"
 }
-variable "automate_fqdn" {}
-variable "origin" {}
-variable "effortless_audit" {}
-variable "effortless_config" {}
-variable "data_collector_token" {}
 
+variable "automate_fqdn" {
+}
+
+variable "origin" {
+}
+
+variable "effortless_audit" {
+}
+
+variable "effortless_config" {
+}
+
+variable "data_collector_token" {
+}
