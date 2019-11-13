@@ -41,7 +41,7 @@ resource "aws_instance" "automate_server" {
       "sudo hostname ${self.tags.Name}",
       "sudo hostnamectl set-hostname ${self.tags.Name}",
       "echo ${self.tags.Name} | sudo tee /etc/hostname",
-      "wget https://packages.chef.io/files/current/automate/latest/chef-automate_linux_amd64.zip",
+      "wget https://packages.chef.io/files/current/latest/chef-automate-cli/chef-automate_linux_amd64.zip",
       "sudo unzip chef-automate_linux_amd64.zip -d /usr/local/bin",
       "echo vm.max_map_count=262144 | sudo tee -a /etc/sysctl.conf",
       "echo vm.dirty_expire_centisecs=20000 | sudo tee -a /etc/sysctl.conf",
