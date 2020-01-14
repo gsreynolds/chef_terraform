@@ -100,3 +100,9 @@ variable "chef_server_fqdn" {
 
 variable "unattended_registration_instance_profile" {
 }
+
+variable "server_ready" {
+  type = list(string)
+
+  default = []
+}

@@ -7,5 +7,5 @@ output "chef_server_public_ip" {
 }
 
 output "data_collector_configured" {
-  value = null_resource.configure_data_collection.*.id
+  value = tolist(null_resource.configure_data_collection.*.id)
 }

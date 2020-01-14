@@ -195,6 +195,17 @@ module "test_org_setup" {
 module "chef_clients" {
   source = "./chef_clients"
 
+  # server_ready is an inter-module dependency workaround to ensure that the clients don't get created until chef server and alb is created
+  server_ready = concat(
+    module.chef_ha.data_collector_configured,
+    module.chef_server.data_collector_configured,
+    [
+      module.chef_alb.forward_to_chef_rule_id,
+      module.chef_alb.forward_to_automate_rule_id,
+      module.chef_automate2.a2_url
+    ]
+  )
+
   ami                                      = data.aws_ami.ubuntu.id
   ami_user                                 = var.ami_user
   az_subnet_ids                            = module.vpc.public_subnets
@@ -216,6 +227,17 @@ module "chef_clients" {
 
 module "effortless_clients" {
   source = "./effortless_clients"
+
+  # server_ready is an inter-module dependency workaround to ensure that the clients don't get created until chef server and alb is created
+  server_ready = concat(
+    module.chef_ha.data_collector_configured,
+    module.chef_server.data_collector_configured,
+    [
+      module.chef_alb.forward_to_chef_rule_id,
+      module.chef_alb.forward_to_automate_rule_id,
+      module.chef_automate2.a2_url
+    ]
+  )
 
   ami                   = data.aws_ami.ubuntu.id
   ami_user              = var.ami_user

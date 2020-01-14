@@ -103,3 +103,9 @@ variable "effortless_config" {
 
 variable "data_collector_token" {
 }
+
+variable "server_ready" {
+  type = list(string)
+
+  default = []
+}
