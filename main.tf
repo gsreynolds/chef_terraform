@@ -211,6 +211,7 @@ module "chef_clients" {
   az_subnet_ids                            = module.vpc.public_subnets
   chef_client_version                      = var.chef_clients["version"]
   chef_server_fqdn                         = module.chef_alb.chef_alb_fqdn
+  chef_admin                               = module.test_org_setup.chef_admin
   chef_validator                           = module.test_org_setup.test_chef_validator
   instance_count                           = var.chef_clients["count"]
   default_tags                             = var.default_tags

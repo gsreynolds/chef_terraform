@@ -92,6 +92,9 @@ variable "r53_ttl" {
   default = "180"
 }
 
+variable "chef_admin" {
+}
+
 variable "chef_validator" {
 }
 
