@@ -1,6 +1,6 @@
 locals {
-  validator_path = "${path.module}/.chef/test-validator.pem"
-  admin_path = "${path.module}/.chef/admin.pem"
+  validator_path = ".chef/test-validator.pem"
+  admin_path = ".chef/admin.pem"
 }
 
 resource "null_resource" "chef_server_create_test_org" {
@@ -20,7 +20,7 @@ resource "null_resource" "chef_server_create_test_org" {
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
-      "sudo chef-server-ctl user-create admin Admin User admin@example.com TestPassword -o test -f admin.pem",
+      "sudo chef-server-ctl user-create admin Admin User admin@example.com TestPassword -f admin.pem",
       "sudo chef-server-ctl org-create test TestOrg -f test-validator.pem -a admin",
       "sudo chef-server-ctl grant-server-admin-permissions admin",
     ]
@@ -37,7 +37,7 @@ resource "null_resource" "get_admin_key" {
   }
 
   provisioner "local-exec" {
-    command = "mkdir -p ${path.module}/.chef && scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${element(var.chef_server_public_ip, 0)}:admin.pem ${local.admin_path}"
+    command = "scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${element(var.chef_server_public_ip, 0)}:admin.pem ${local.admin_path}"
   }
 }
 
@@ -57,7 +57,7 @@ resource "null_resource" "get_validator_key" {
   }
 
   provisioner "local-exec" {
-    command = "mkdir -p ${path.module}/.chef && scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${element(var.chef_server_public_ip, 0)}:test-validator.pem ${local.validator_path}"
+    command = "scp -r -o stricthostkeychecking=no -i ${var.instance_keys["key_file"]} ${var.ami_user}@${element(var.chef_server_public_ip, 0)}:test-validator.pem ${local.validator_path}"
   }
 }
 
@@ -73,4 +73,17 @@ resource "aws_ssm_parameter" "test_chef_validator" {
   type      = "SecureString"
   overwrite = true
   value     = chomp(data.local_file.test_chef_validator[0].content)
+}
+
+data "template_file" "credentials" {
+  template = file("${path.module}/templates/credentials")
+
+  vars = {
+    chef_server_url = "https://${var.chef_server_fqdn}/organizations/test"
+  }
+}
+
+resource "local_file" "credentials" {
+  content  = data.template_file.credentials.rendered
+  filename = ".chef/credentials"
 }

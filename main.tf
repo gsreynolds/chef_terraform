@@ -178,6 +178,7 @@ module "test_org_setup" {
 
   ami_user                  = var.ami_user
   automate_fqdn             = module.chef_alb.automate_alb_fqdn
+  chef_server_fqdn          = module.chef_alb.chef_alb_fqdn
   automate_server_public_ip = element(module.chef_automate2.chef_automate_public_ip, 0)
   chef_server_ids = concat(
     module.chef_ha.frontend_ids,

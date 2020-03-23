@@ -19,10 +19,14 @@ variable "instance_keys" {
   }
 }
 
+
 variable "chef_server_public_ip" {
 }
 
 variable "automate_server_public_ip" {
+}
+
+variable "chef_server_fqdn" {
 }
 
 variable "automate_fqdn" {
