@@ -3,39 +3,39 @@ locals {
   automate_alb_fqdn = "${var.hostnames["automate_server"]}.${var.domain}"
 }
 
-resource "aws_s3_bucket" "alb_logs" {
-  bucket = var.log_bucket
-  acl    = "private"
+# resource "aws_s3_bucket" "alb_logs" {
+#   bucket = var.log_bucket
+#   acl    = "private"
 
-  tags = merge(
-    var.default_tags,
-    {
-      "Name" = "${var.deployment_name} Frontend ALB Logs"
-    },
-  )
-}
+#   tags = merge(
+#     var.default_tags,
+#     {
+#       "Name" = "${var.deployment_name} Frontend ALB Logs"
+#     },
+#   )
+# }
 
-resource "aws_s3_bucket_policy" "alb_logs" {
-  bucket = aws_s3_bucket.alb_logs.id
+# resource "aws_s3_bucket_policy" "alb_logs" {
+#   bucket = aws_s3_bucket.alb_logs.id
 
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Id": "${var.log_bucket}-alb-logs",
-  "Statement": [
-    {
-      "Sid": "AllowELBPutObject",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::${var.elb_account_id}:root"
-      },
-      "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::${var.log_bucket}/alb/AWSLogs/${var.account_id}/*"
-    }
-  ]
-}
-POLICY
-}
+#   policy = <<POLICY
+# {
+#   "Version": "2012-10-17",
+#   "Id": "${var.log_bucket}-alb-logs",
+#   "Statement": [
+#     {
+#       "Sid": "AllowELBPutObject",
+#       "Effect": "Allow",
+#       "Principal": {
+#         "AWS": "arn:aws:iam::${var.elb_account_id}:root"
+#       },
+#       "Action": "s3:PutObject",
+#       "Resource": "arn:aws:s3:::${var.log_bucket}/alb/AWSLogs/${var.account_id}/*"
+#     }
+#   ]
+# }
+# POLICY
+# }
 
 resource "aws_acm_certificate" "alb" {
   domain_name = local.chef_alb_fqdn
@@ -96,9 +96,9 @@ module "alb" {
   source = "terraform-aws-modules/alb/aws"
   name = "${replace(local.chef_alb_fqdn, ".", "-")}-alb"
   security_groups = [var.https_security_group_id]
-  access_logs = {
-    bucket = aws_s3_bucket.alb_logs.bucket
-  }
+  # access_logs = {
+  #   bucket = aws_s3_bucket.alb_logs.bucket
+  # }
   subnets = var.subnets
 
   tags = merge(

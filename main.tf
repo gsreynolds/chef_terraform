@@ -200,8 +200,8 @@ module "chef_clients" {
     module.chef_ha.data_collector_configured,
     module.chef_server.data_collector_configured,
     [
-      module.chef_alb.forward_to_chef_rule_id,
-      module.chef_alb.forward_to_automate_rule_id,
+      # module.chef_alb.forward_to_chef_rule_id,
+      # module.chef_alb.forward_to_automate_rule_id,
       module.chef_automate2.a2_url
     ]
   )
@@ -234,8 +234,8 @@ module "effortless_clients" {
     module.chef_ha.data_collector_configured,
     module.chef_server.data_collector_configured,
     [
-      module.chef_alb.forward_to_chef_rule_id,
-      module.chef_alb.forward_to_automate_rule_id,
+      # module.chef_alb.forward_to_chef_rule_id,
+      # module.chef_alb.forward_to_automate_rule_id,
       module.chef_automate2.a2_url
     ]
   )
