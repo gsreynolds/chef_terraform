@@ -1,40 +1,45 @@
 # Chef A2 Terraform
 
 Consists of
+* Application Load Balancer
 * Chef Automate 2 server
 * Chef Server standalone or Chef HA Frontend/Backend clusters
 * Route53 DNS records
-* Application Load Balancer
+* Org and admin user creation
+* Chef Clients
 
 Currently only installing the packages and doing minimal configuration - the rest is left as an exercise to the reader.
 
-## Load Balancer - chef_alb
+## Load Balancer - `chef_alb`
 Uses the terraform-aws-modules/alb/aws module to create a ALB with a certificate issued from ACM to serve traffic to Chef Automate and Chef Server/Chef HA.
 
-## Chef Automate - chef_automate2
+## Chef Automate - `chef_automate2`
+Installs Chef Automate and retrieves credentials & data collector token.
 https://automate.chef.io/docs/install/
 
-## Chef Server Standalone - chef_server
-### Config
+## Chef Server
+Installs Chef Server Standalone or with Frontend & Chef-Backend servers.
+
+### Standalone - `chef_server`
 https://docs.chef.io/install_server/#standalone
 
-## Chef HA - chef_ha
-### Frontend Config
+### Chef HA Frontend and Backend Config - `chef_ha`
 https://docs.chef.io/install_server_ha/
 
-### Backend Config
-https://docs.chef.io/install_server_ha/
-
-### Backend failure recovery
-https://docs.chef.io/backend_failure_recovery/
+## Org and user creation - `test_org_setup`
+Creates a `test` org and `admin` user.
 
 ## Chef Clients
-### Chef Client module  - chef_clients
-### Effortless Chef Client module - effortless_clients
 
-## Unattended node registration - chef_unattended_registration
-https://docs.chef.io/install_bootstrap/#unattended-installs
+### Chef Client module  - `chef_clients`
+Installs and configures Chef Client.
 
-* One option is to use AWS Systems Manager Parameter Store to make the validator securely available to nodes via IAM policy & roles
+One option is to use AWS Systems Manager Parameter Store to make the validator securely available to nodes via IAM policy & roles
 * `chef_unattended_registration` includes IAM config for allowing EC2 instances access to the validator key in SSM
-* `chef_clients` includes an example of unattended node registration. `chef_clients.count` variable controls how many clients are deployed.
+* `chef_clients` includes an example of unattended node registration: https://docs.chef.io/install_bootstrap/#unattended-installs
+
+Another option is to use the Terraform Chef provisioner
+* `chef_clients` also includes an example of using the Chef provisioner: https://www.terraform.io/docs/provisioners/chef.html
+
+### Effortless Chef Client module - `effortless_clients`
+Uses pre-built Chef Habitat "Effortless Config" packages, which bundle Chef Client and a Policyfile in a Habitat package: https://github.com/chef/effortless & https://learn.chef.io/modules/effortless-config#/demos-and-quickstarts
