@@ -81,7 +81,7 @@ resource "aws_route53_record" "chef_alb" {
   name = local.chef_alb_fqdn
   type = "CNAME"
   ttl = var.r53_ttl
-  records = [module.alb.dns_name]
+  records = [module.alb.this_lb_dns_name]
 }
 
 resource "aws_route53_record" "automate_alb" {
@@ -89,15 +89,16 @@ resource "aws_route53_record" "automate_alb" {
   name = local.automate_alb_fqdn
   type = "CNAME"
   ttl = var.r53_ttl
-  records = [module.alb.dns_name]
+  records = [module.alb.this_lb_dns_name]
 }
 
 module "alb" {
   source = "terraform-aws-modules/alb/aws"
-  load_balancer_name = "${replace(local.chef_alb_fqdn, ".", "-")}-alb"
+  name = "${replace(local.chef_alb_fqdn, ".", "-")}-alb"
   security_groups = [var.https_security_group_id]
-  log_bucket_name = aws_s3_bucket.alb_logs.bucket
-  log_location_prefix = "alb"
+  access_logs = {
+    bucket = aws_s3_bucket.alb_logs.bucket
+  }
   subnets = var.subnets
 
   tags = merge(
@@ -116,7 +117,7 @@ module "alb" {
       "ssl_policy" = "ELBSecurityPolicy-TLS-1-2-2017-01"
     },
   ]
-  https_listeners_count = "1"
+
   target_groups = [
     {
       "name" = "automate-https"
@@ -129,8 +130,6 @@ module "alb" {
       "backend_port" = "443"
     },
   ]
-
-  target_groups_count = "2"
 }
 
 resource "aws_lb_target_group_attachment" "automate-https" {
