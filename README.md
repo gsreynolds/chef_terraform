@@ -8,8 +8,6 @@ Consists of
 * Org and admin user creation
 * Chef Clients
 
-Currently only installing the packages and doing minimal configuration - the rest is left as an exercise to the reader.
-
 ## Modules
 
 ### Load Balancer - `chef_alb`
@@ -36,7 +34,11 @@ https://docs.chef.io/install_server_ha/
 
 ### Org and user creation - `test_org_setup`
 
-Creates a `test` org and `admin` user.
+Creates a `test` org and `admin` user. Creates SSM parameter to make `test` org validator key accessible to clients.
+
+### Unattended registration - `chef_unattended_registration`
+
+Allow nodes to self-register with Chef Server unattended via SSM parameter for validation key
 
 ### Chef Clients
 
@@ -44,12 +46,9 @@ Creates a `test` org and `admin` user.
 
 Installs and configures Chef Client.
 
-One option is to use AWS Systems Manager Parameter Store to make the validator securely available to nodes via IAM policy & roles
+Use AWS Systems Manager Parameter Store to make the validator securely available to nodes via IAM policy & roles
 * `chef_unattended_registration` includes IAM config for allowing EC2 instances access to the validator key in SSM
 * `chef_clients` includes an example of unattended node registration: https://docs.chef.io/install_bootstrap/#unattended-installs
-
-Another option is to use the Terraform Chef provisioner
-* `chef_clients` also includes an example of using the Chef provisioner: https://www.terraform.io/docs/provisioners/chef.html
 
 #### Effortless Chef Client module - `effortless_clients`
 
