@@ -5,16 +5,6 @@ variable "validator_key_path" {
   default = "/chef/test/"
 }
 
-variable "aws_provider" {
-  type        = map(string)
-  description = "AWS provider settings"
-
-  default = {
-    region  = ""
-    profile = ""
-  }
-}
-
 variable "account_id" {
 }
 

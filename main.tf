@@ -1,7 +1,4 @@
-provider "aws" {
-  region  = var.aws_provider["region"]
-  profile = var.aws_provider["profile"]
-}
+provider "aws" {}
 
 locals {
   deployment_name = var.application_name
@@ -161,7 +158,6 @@ module "chef_unattended_registration" {
   create_unattended_registration = var.create_chef_ha || var.create_chef_server ? 1 : 0
 
   account_id         = data.aws_caller_identity.current.account_id
-  aws_provider       = var.aws_provider
   validator_key_path = var.validator_key_path
 }
 
@@ -220,7 +216,6 @@ module "chef_clients" {
   hostnames                                = var.hostnames
   instance                                 = var.instance
   instance_keys                            = var.instance_keys
-  aws_provider                             = var.aws_provider
   r53_ttl                                  = var.r53_ttl
   ssh_security_group_id                    = module.security_groups.ssh_security_group_id
   unattended_registration_instance_profile = module.chef_unattended_registration.instance_profile
@@ -255,7 +250,6 @@ module "effortless_clients" {
   hostnames             = var.hostnames
   instance              = var.instance
   instance_keys         = var.instance_keys
-  aws_provider          = var.aws_provider
   r53_ttl               = var.r53_ttl
   ssh_security_group_id = module.security_groups.ssh_security_group_id
   zone_id               = data.aws_route53_zone.zone.id

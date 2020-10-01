@@ -1,5 +1,6 @@
 # Allow nodes to self-register with Chef Server unattended
 # $ aws ssm put-parameter --name "chef/test/chef_validator" --type "SecureString" --overwrite --value "$(cat validator.pem)"
+data "aws_region" "current" {}
 
 resource "aws_iam_role" "chef_validator" {
   count       = var.create_unattended_registration
@@ -44,7 +45,7 @@ resource "aws_iam_policy" "chef_validator" {
             "Action": [
                 "ssm:Get*"
             ],
-            "Resource": "arn:aws:ssm:${var.aws_provider["region"]}:${var.account_id}:parameter${var.validator_key_path}*"
+            "Resource": "arn:aws:ssm:${data.aws_region.current.name}:${var.account_id}:parameter${var.validator_key_path}*"
         }
     ]
   }

@@ -1,8 +1,3 @@
-aws_provider = {
-  region = "eu-west-1"
-  profile = "profilename"
-}
-
 application_name = "My Chef Automate"
 
 create_chef_ha     = false

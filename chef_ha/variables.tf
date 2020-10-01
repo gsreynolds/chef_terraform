@@ -15,16 +15,6 @@ variable "ami_user" {
   default = "ubuntu"
 }
 
-variable "aws_provider" {
-  type        = map(string)
-  description = "AWS provider settings"
-
-  default = {
-    region  = ""
-    profile = ""
-  }
-}
-
 variable "application_name" {
   description = "Application name"
   default     = "Chef HA"
