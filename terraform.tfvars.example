@@ -10,17 +10,17 @@ create_chef_server = true
 
 chef_backend = {
   count   = 3
-  version = "2.1.0"
+  version = "2.2.0"
 }
 
 chef_frontend = {
   count   = 3
-  version = "13.1.13"
+  version = "14.0.58"
 }
 
 chef_clients = {
   count   = 3
-  version = "15.8.23"
+  version = "16.5.77"
 }
 
 effortless_clients = {
