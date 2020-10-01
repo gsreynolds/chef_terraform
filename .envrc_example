@@ -1,0 +1,2 @@
+export AWS_REGION="REGION"
+export AWS_PROFILE="PROFILE"
