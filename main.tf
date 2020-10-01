@@ -63,25 +63,6 @@ module "security_groups" {
   zone_id             = data.aws_route53_zone.zone.id
 }
 
-module "chef_alb" {
-  source = "./chef_alb"
-
-  account_id              = data.aws_caller_identity.current.account_id
-  subnets                 = module.vpc.public_subnets
-  deployment_name         = local.deployment_name
-  domain                  = var.domain
-  hostnames               = var.hostnames
-  https_security_group_id = module.security_groups.https_security_group_id
-  log_bucket              = var.log_bucket
-  chef_target_ids = concat(
-    module.chef_ha.frontend_ids,
-    module.chef_server.chef_server_id,
-  )
-  automate_target_ids = module.chef_automate2.chef_automate_ids
-  vpc_id              = module.vpc.vpc_id
-  zone_id             = data.aws_route53_zone.zone.id
-}
-
 module "chef_automate2" {
   source = "./chef_automate2"
 
@@ -150,6 +131,26 @@ module "chef_ha" {
   vpc                       = var.vpc
   vpc_id                    = module.vpc.vpc_id
   zone_id                   = data.aws_route53_zone.zone.id
+}
+
+module "chef_alb" {
+  source = "./chef_alb"
+
+  account_id              = data.aws_caller_identity.current.account_id
+  subnets                 = module.vpc.public_subnets
+  deployment_name         = local.deployment_name
+  domain                  = var.domain
+  hostnames               = var.hostnames
+  https_security_group_id = module.security_groups.https_security_group_id
+  log_bucket              = var.log_bucket
+  chef_target_ids = concat(
+    module.chef_ha.frontend_ids,
+    module.chef_server.chef_server_id,
+  )
+  chef_target_count   = var.create_chef_ha ? var.chef_frontend["count"] : 1
+  automate_target_ids = module.chef_automate2.chef_automate_ids
+  vpc_id              = module.vpc.vpc_id
+  zone_id             = data.aws_route53_zone.zone.id
 }
 
 module "chef_unattended_registration" {

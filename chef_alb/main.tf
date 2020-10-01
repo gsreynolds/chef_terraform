@@ -138,7 +138,7 @@ resource "aws_lb_target_group_attachment" "automate-https" {
 }
 
 resource "aws_lb_target_group_attachment" "chef-https" {
-  count            = length(var.chef_target_ids)
+  count            = var.chef_target_count
   target_group_arn = element(module.alb.target_group_arns, 1)
   target_id        = element(var.chef_target_ids, count.index)
   port             = 443

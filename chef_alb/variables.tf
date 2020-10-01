@@ -40,6 +40,10 @@ variable "vpc_id" {
 variable "https_security_group_id" {
 }
 
+variable "chef_target_count" {
+  default = 0
+}
+
 variable "chef_target_ids" {
   type = list(string)
 
