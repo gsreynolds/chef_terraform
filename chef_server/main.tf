@@ -84,7 +84,7 @@ resource "aws_route53_health_check" "chef_server" {
   fqdn              = element(aws_instance.chef_server.*.tags.Name, count.index)
   port              = 443
   type              = "HTTPS"
-  resource_path     = "/"
+  resource_path     = "/_status"
   failure_threshold = "5"
   request_interval  = "30"
 

@@ -161,7 +161,7 @@ resource "aws_route53_health_check" "frontend" {
   fqdn              = element(aws_instance.frontends.*.tags.Name, count.index)
   port              = 443
   type              = "HTTPS"
-  resource_path     = "/"
+  resource_path     = "/_status"
   failure_threshold = "5"
   request_interval  = "30"
 
