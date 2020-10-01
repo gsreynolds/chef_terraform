@@ -46,54 +46,36 @@ resource "aws_instance" "chef_clients" {
     inline = [
       "set -Eeu",
       "sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt install -y ntp",
-      # "sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt install -y ntp python3 python3-pip",
+      "sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt install -y ntp python3 python3-pip",
       "export LC_ALL='en_US.UTF-8' && export LC_CTYPE='en_US.UTF-8' && sudo dpkg-reconfigure --frontend=noninteractive locales",
-      # "sudo pip3 -q install awscli --upgrade",
+      "sudo pip3 -q install awscli --upgrade",
       "sudo hostname ${self.tags.Name}",
       "sudo hostnamectl set-hostname ${self.tags.Name}",
       "echo ${self.tags.Name} | sudo tee /etc/hostname",
       "sudo mkdir -p /etc/chef && sudo mkdir -p /var/lib/chef && sudo mkdir -p /var/log/chef",
-      # "curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -d /tmp -v ${var.chef_client_version}",
-      # "aws ssm get-parameter --name ${var.chef_validator} --with-decryption --output text --query Parameter.Value --region ${data.aws_region.current.name} | sudo tee /etc/chef/validator.pem > /dev/null",
+      "curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -d /tmp -v ${var.chef_client_version}",
+      "aws ssm get-parameter --name ${var.chef_validator} --with-decryption --output text --query Parameter.Value --region ${data.aws_region.current.name} | sudo tee /etc/chef/validator.pem > /dev/null",
     ]
   }
 
-  # provisioner "file" {
-  #   source      = "${path.module}/first-boot.json"
-  #   destination = "first-boot.json"
-  # }
-
-  provisioner "chef" {
-    attributes_json = <<EOF
-      {}
-    EOF
-    run_list        = []
-    # use_policyfile  = true
-    # policy_name     = "base"
-    # policy_group    = "development"
-    client_options  = ["chef_license 'accept'"]
-    node_name       = self.tags.Name
-    server_url      = "https://${var.chef_server_fqdn}/organizations/test"
-    recreate_client = true
-    user_name       = "admin"
-    user_key        = var.chef_admin
-    version         = var.chef_client_version
-    ssl_verify_mode = ":verify_peer"
+  provisioner "file" {
+    source      = "${path.module}/first-boot.json"
+    destination = "first-boot.json"
   }
 
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "set -Eeu",
-  #     "echo 'log_location STDOUT' | sudo tee /etc/chef/client.rb",
-  #     "echo 'chef_server_url \"https://${var.chef_server_fqdn}/organizations/test\"' | sudo tee -a /etc/chef/client.rb",
-  #     "echo 'validation_client_name \"test-validator\"' | sudo tee -a /etc/chef/client.rb",
-  #     "echo 'validation_key \"/etc/chef/validator.pem\"' | sudo tee -a /etc/chef/client.rb",
-  #     "echo 'node_name  \"${self.tags.Name}\"' | sudo tee -a /etc/chef/client.rb",
-  #     "echo 'ssl_verify_mode :verify_peer' | sudo tee -a /etc/chef/client.rb",
-  #     "sudo mv first-boot.json /etc/chef/first-boot.json",
-  #     "sudo chef-client -j /etc/chef/first-boot.json --chef-license=accept",
-  #   ]
-  # }
+  provisioner "remote-exec" {
+    inline = [
+      "set -Eeu",
+      "echo 'log_location STDOUT' | sudo tee /etc/chef/client.rb",
+      "echo 'chef_server_url \"https://${var.chef_server_fqdn}/organizations/test\"' | sudo tee -a /etc/chef/client.rb",
+      "echo 'validation_client_name \"test-validator\"' | sudo tee -a /etc/chef/client.rb",
+      "echo 'validation_key \"/etc/chef/validator.pem\"' | sudo tee -a /etc/chef/client.rb",
+      "echo 'node_name  \"${self.tags.Name}\"' | sudo tee -a /etc/chef/client.rb",
+      "echo 'ssl_verify_mode :verify_peer' | sudo tee -a /etc/chef/client.rb",
+      "sudo mv first-boot.json /etc/chef/first-boot.json",
+      "sudo chef-client -j /etc/chef/first-boot.json --chef-license=accept",
+    ]
+  }
 }
 
 resource "aws_route53_record" "chef_clients" {
