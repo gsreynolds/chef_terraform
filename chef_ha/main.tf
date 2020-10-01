@@ -39,7 +39,8 @@ resource "aws_instance" "backends" {
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
-      "sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt install -y ntp",
+      "sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade",
+      "sudo DEBIAN_FRONTEND=noninteractive apt install -y ntp",
       "sudo hostname ${self.tags.Name}",
       "sudo hostnamectl set-hostname ${self.tags.Name}",
       "echo ${self.tags.Name} | sudo tee /etc/hostname",
@@ -109,7 +110,8 @@ resource "aws_instance" "frontends" {
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
-      "sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt install -y ntp",
+      "sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade",
+      "sudo DEBIAN_FRONTEND=noninteractive apt install -y ntp",
       "sudo hostname ${self.tags.Name}",
       "sudo hostnamectl set-hostname ${self.tags.Name}",
       "echo ${self.tags.Name} | sudo tee /etc/hostname",
