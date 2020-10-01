@@ -1,12 +1,18 @@
-# Chef Terraform
+# Chef Terraform (AWS)
 
 Consists of
-* Application Load Balancer
+* Application Load Balancer 
 * Chef Automate 2 server
 * Chef Server standalone or Chef HA Frontend/Backend clusters
 * Route53 DNS records
-* Org and admin user creation
+* Org and admin user creation 
+* Unattended client registration using SSM parameter for validator key
 * Chef Clients
+
+Tested versions (see `terraform.tfvars.example`):
+* Chef Infra Server `14.0.58` (standalone and frontend for backend HA)
+* Chef Backend `2.2.0`
+* Chef Infra Client `16.5.77`
 
 ## Modules
 
@@ -18,7 +24,7 @@ Uses the terraform-aws-modules/alb/aws module to create a ALB with a certificate
 
 Installs Chef Automate and retrieves credentials & data collector token.
 
-https://automate.chef.io/docs/install/
+https://docs.chef.io/automate/install/
 
 ### Chef Server
 
@@ -52,4 +58,4 @@ Use AWS Systems Manager Parameter Store to make the validator securely available
 
 #### Effortless Chef Client module - `effortless_clients`
 
-Uses pre-built Chef Habitat "Effortless Config" packages, which bundle Chef Client and a Policyfile in a Habitat package: https://github.com/chef/effortless & https://learn.chef.io/modules/effortless-config#/demos-and-quickstarts
+Uses pre-built Chef Habitat "Effortless Config" packages, which bundle Chef Client and a Policyfile in a Habitat package: https://github.com/chef/effortless
