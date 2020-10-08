@@ -1,0 +1,6 @@
+{
+  "id": "production-project-viewers",
+  "members": [
+    "team:saml:chef_production_viewers"
+  ]
+}

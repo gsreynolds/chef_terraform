@@ -14,6 +14,7 @@ curl -sk -H "api-token: $TOKEN" -H "Content-Type: application/json" https://loca
 
 # List project rules
 curl -sk -H "api-token: $TOKEN" -H "Content-Type: application/json" https://localhost/apis/iam/v2/projects/development/rules | jq
+# Create project rules
 curl -sk -H "api-token: $TOKEN" -H "Content-Type: application/json" https://localhost/apis/iam/v2/projects/development/rules -d @project-development-rules.json | jq
 
 # Apply project rules

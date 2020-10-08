@@ -67,7 +67,13 @@ resource "aws_instance" "automate_server" {
       "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @project-development-rules.json https://localhost/apis/iam/v2/projects/development/rules",
       "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @project-test-rules.json https://localhost/apis/iam/v2/projects/test/rules",
       "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @project-production-rules.json https://localhost/apis/iam/v2/projects/production/rules",
-      "curl -sk -H \"api-token: $TOKEN\" https://localhost/apis/iam/v2/apply-rules -X POST"
+      "curl -sk -H \"api-token: $TOKEN\" https://localhost/apis/iam/v2/apply-rules -X POST",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/development-project-owners/members -d @project-development-members-owners.json -X PUT",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/development-project-viewers/members -d @project-development-members-viewers.json -X PUT",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/test-project-owners/members -d @project-test-members-owners.json -X PUT",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/test-project-viewers/members -d @project-test-members-viewers.json -X PUT",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/production-project-owners/members -d @project-production-members-owners.json -X PUT",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/production-project-viewers/members -d @project-production-members-viewers.json -X PUT"
     ]
   }
 }

@@ -1,0 +1,6 @@
+{
+  "id": "development-project-viewers",
+  "members": [
+    "team:saml:chef_development_viewers"
+  ]
+}
