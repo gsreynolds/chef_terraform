@@ -22,3 +22,13 @@ output "a2_url" {
   value = module.chef_automate2.a2_url
 }
 
+output "automate_public_ip" {
+  value = module.chef_automate2.chef_automate_public_ip
+}
+
+output "chef_server_public_ip" {
+  value = concat(
+    module.chef_ha.chef_server_public_ip,
+    module.chef_server.chef_server_public_ip
+  )
+}
