@@ -35,8 +35,8 @@ resource "aws_instance" "automate_server" {
   }
 
   provisioner "file" {
-    source      = "${path.module}/iam/administrator-access-members.json"
-    destination = "administrator-access-members.json"
+    source      = "${path.module}/iam/"
+    destination = "/home/${var.ami_user}"
   }
 
   provisioner "remote-exec" {
