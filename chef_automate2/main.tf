@@ -59,11 +59,15 @@ resource "aws_instance" "automate_server" {
       "export TOKEN=$(sudo chef-automate iam token create admin --admin)",
       "echo admin-token = \"$TOKEN\" >> automate-credentials.toml",
       "echo ingest-token = \"$(sudo chef-automate iam token create ingest)\" >> automate-credentials.toml",
-      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"members\":[\"token:ingest\"]}' https://localhost/apis/iam/v2/policies/ingest-access/members:add"
-      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @administrator-access-members.json -X PUT https://localhost/apis/iam/v2/policies/administrator-access/members"
-      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"development\", \"name\": \"Development\"}' https://localhost/apis/iam/v2/projects"
-      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"test\", \"name\": \"Test\"}' https://localhost/apis/iam/v2/projects"
-      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"production\", \"name\": \"Production\"}' https://localhost/apis/iam/v2/projects"
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"members\":[\"token:ingest\"]}' https://localhost/apis/iam/v2/policies/ingest-access/members:add",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @administrator-access-members.json -X PUT https://localhost/apis/iam/v2/policies/administrator-access/members",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"development\", \"name\": \"Development\"}' https://localhost/apis/iam/v2/projects",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"test\", \"name\": \"Test\"}' https://localhost/apis/iam/v2/projects",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"production\", \"name\": \"Production\"}' https://localhost/apis/iam/v2/projects",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @project-development-rules.json https://localhost/apis/iam/v2/projects/development/rules",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @project-test-rules.json https://localhost/apis/iam/v2/projects/test/rules",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @project-production-rules.json https://localhost/apis/iam/v2/projects/production/rules",
+      "curl -sk -H \"api-token: $TOKEN\" https://localhost/apis/iam/v2/apply-rules -X POST"
     ]
   }
 }

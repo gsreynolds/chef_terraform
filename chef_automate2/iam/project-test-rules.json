@@ -1,0 +1,14 @@
+{
+  "conditions": [
+    {
+      "attribute": "CHEF_POLICY_GROUP",
+      "operator": "MEMBER_OF",
+      "values": [
+        "test"
+        ]
+    }
+  ],
+  "id": "test-policy-group-rule",
+  "name": "Test Policy Group Rule",
+  "type": "NODE"
+}
