@@ -1,0 +1,14 @@
+{
+  "conditions": [
+    {
+      "attribute": "CHEF_POLICY_GROUP",
+      "operator": "MEMBER_OF",
+      "values": [
+        "development"
+        ]
+    }
+  ],
+  "id": "development-policy-group-rule",
+  "name": "Development Policy Group Rule",
+  "type": "NODE"
+}

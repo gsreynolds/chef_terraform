@@ -1,0 +1,6 @@
+{
+  "id": "test-project-owners",
+  "members": [
+    "team:saml:chef_test_admin"
+  ]
+}

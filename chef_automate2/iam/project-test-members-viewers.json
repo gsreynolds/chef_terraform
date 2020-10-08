@@ -1,0 +1,6 @@
+{
+  "id": "test-project-viewers",
+  "members": [
+    "team:saml:chef_test_viewers"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "conditions": [
+    {
+      "attribute": "CHEF_POLICY_GROUP",
+      "operator": "MEMBER_OF",
+      "values": [
+        "production"
+        ]
+    }
+  ],
+  "id": "production-policy-group-rule",
+  "name": "Production Policy Group Rule",
+  "type": "NODE"
+}

@@ -34,6 +34,11 @@ resource "aws_instance" "automate_server" {
     private_key = file(var.instance_keys["key_file"])
   }
 
+  provisioner "file" {
+    source      = "${path.module}/iam/"
+    destination = "/home/${var.ami_user}"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
@@ -51,7 +56,24 @@ resource "aws_instance" "automate_server" {
       "sudo chef-automate deploy --channel current --upgrade-strategy none --accept-terms-and-mlsa config.toml",
       "sudo chef-automate license apply \"${var.automate_license}\"",
       "sudo chown ${var.ami_user}:${var.ami_user} automate-credentials.toml",
-      "echo api-token = \"$(sudo chef-automate iam token create admin --admin)\" >> automate-credentials.toml",
+      "export TOKEN=$(sudo chef-automate iam token create admin --admin)",
+      "echo admin-token = \"$TOKEN\" >> automate-credentials.toml",
+      "echo ingest-token = \"$(sudo chef-automate iam token create ingest)\" >> automate-credentials.toml",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"members\":[\"token:ingest\"]}' https://localhost/apis/iam/v2/policies/ingest-access/members:add",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @administrator-access-members.json -X PUT https://localhost/apis/iam/v2/policies/administrator-access/members",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"development\", \"name\": \"Development\"}' https://localhost/apis/iam/v2/projects",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"test\", \"name\": \"Test\"}' https://localhost/apis/iam/v2/projects",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"production\", \"name\": \"Production\"}' https://localhost/apis/iam/v2/projects",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @project-development-rule.json https://localhost/apis/iam/v2/projects/development/rules",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @project-test-rule.json https://localhost/apis/iam/v2/projects/test/rules",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @project-production-rule.json https://localhost/apis/iam/v2/projects/production/rules",
+      "curl -sk -H \"api-token: $TOKEN\" https://localhost/apis/iam/v2/apply-rules -X POST",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/development-project-owners/members -d @project-development-members-owners.json -X PUT",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/development-project-viewers/members -d @project-development-members-viewers.json -X PUT",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/test-project-owners/members -d @project-test-members-owners.json -X PUT",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/test-project-viewers/members -d @project-test-members-viewers.json -X PUT",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/production-project-owners/members -d @project-production-members-owners.json -X PUT",
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" https://localhost/apis/iam/v2/policies/production-project-viewers/members -d @project-production-members-viewers.json -X PUT"
     ]
   }
 }
