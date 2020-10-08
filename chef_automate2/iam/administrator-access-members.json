@@ -1,0 +1,9 @@
+{
+  "id": "administrator-access",
+  "members": [
+    "team:local:admins",
+    "token:admin",
+    "team:saml:chef_admin",
+    "user:saml:greynolds@chef.io"
+  ]
+}
