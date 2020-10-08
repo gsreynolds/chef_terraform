@@ -59,8 +59,11 @@ resource "aws_instance" "automate_server" {
       "echo admin-token = \"$(sudo chef-automate iam token create admin --admin)\" >> automate-credentials.toml",
       "echo ingest-token = \"$(sudo chef-automate iam token create ingest)\" >> automate-credentials.toml",
       "export TOKEN=\"$(cat automate-credentials.toml | sed -n -e 's/^admin-token = //p' | tr -d '\"')",
-      "curl -kH \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"members\":[\"token:ingest\"]}' https://localhost/apis/iam/v2/policies/ingest-access/members:add"
-      "curl -kH \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @administrator-access-members.json -X PUT https://localhost/apis/iam/v2/policies/administrator-access/members"
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"members\":[\"token:ingest\"]}' https://localhost/apis/iam/v2/policies/ingest-access/members:add"
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @administrator-access-members.json -X PUT https://localhost/apis/iam/v2/policies/administrator-access/members"
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"development\", \"name\": \"Development\"}' https://localhost/apis/iam/v2/projects"
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"test\", \"name\": \"Test\"}' https://localhost/apis/iam/v2/projects"
+      "curl -sk -H \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"id\": \"production\", \"name\": \"Production\"}' https://localhost/apis/iam/v2/projects"
     ]
   }
 }
