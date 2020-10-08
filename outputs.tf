@@ -18,6 +18,10 @@ output "data_collector_token" {
   value = module.chef_automate2.data_collector_token
 }
 
+output "admin_token" {
+  value = module.chef_automate2.admin_token
+}
+
 output "a2_url" {
   value = module.chef_automate2.a2_url
 }

@@ -19,6 +19,5 @@ jq -n --arg a2_admin "$a2_admin" \
       --arg a2_password "$a2_password" \
       --arg a2_admin_token "$a2_admin_token" \
       --arg a2_ingest_token "$a2_ingest_token" \
-      --arg a2_token "$a2_token" \
       --arg a2_url "$a2_url" \
       '{"a2_admin":$a2_admin,"a2_password":$a2_password,"a2_admin_token":$a2_admin_token,"a2_ingest_token":$a2_ingest_token,"a2_url":$a2_url}'

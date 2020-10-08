@@ -15,7 +15,11 @@ output "a2_admin_password" {
 }
 
 output "data_collector_token" {
-  value = data.external.a2_secrets.result["a2_token"]
+  value = data.external.a2_secrets.result["a2_ingest_token"]
+}
+
+output "admin_token" {
+  value = data.external.a2_secrets.result["a2_admin_token"]
 }
 
 output "a2_url" {
