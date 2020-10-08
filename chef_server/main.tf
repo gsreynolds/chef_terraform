@@ -37,7 +37,7 @@ resource "aws_instance" "chef_server" {
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
-      "sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade",
+      "sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y",
       "sudo DEBIAN_FRONTEND=noninteractive apt install -y ntp",
       "sudo hostname ${self.tags.Name}",
       "sudo hostnamectl set-hostname ${self.tags.Name}",
