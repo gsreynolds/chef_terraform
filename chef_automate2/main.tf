@@ -34,6 +34,11 @@ resource "aws_instance" "automate_server" {
     private_key = file(var.instance_keys["key_file"])
   }
 
+  provisioner "file" {
+    source      = "${path.module}/iam/administrator-access-members.json"
+    destination = "administrator-access-members.json"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "set -Eeu",
@@ -54,7 +59,8 @@ resource "aws_instance" "automate_server" {
       "echo admin-token = \"$(sudo chef-automate iam token create admin --admin)\" >> automate-credentials.toml",
       "echo ingest-token = \"$(sudo chef-automate iam token create ingest)\" >> automate-credentials.toml",
       "export TOKEN=\"$(cat automate-credentials.toml | sed -n -e 's/^admin-token = //p' | tr -d '\"')",
-      "curl -kH \"api-token: $TOKEN\" -d '{\"members\":[\"token:ingest\"]}' https://localhost/apis/iam/v2/policies/ingest-access/members:add"
+      "curl -kH \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d '{\"members\":[\"token:ingest\"]}' https://localhost/apis/iam/v2/policies/ingest-access/members:add"
+      "curl -kH \"api-token: $TOKEN\" -H \"Content-Type: application/json\" -d @administrator-access-members.json -X PUT https://localhost/apis/iam/v2/policies/administrator-access/members"
     ]
   }
 }
