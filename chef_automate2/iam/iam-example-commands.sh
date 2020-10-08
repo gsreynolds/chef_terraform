@@ -2,7 +2,7 @@ curl -sk -H "api-token: $TOKEN" https://localhost/apis/iam/v2/policies | jq
 curl -sk -H "api-token: $TOKEN" https://localhost/apis/iam/v2/policies/administrator-access | jq
 
 # Add members
-curl -sk -H "api-token: $TOKEN" -H "Content-Type: application/json" https://localhost/apis/iam/v2/policies/administrator-access/members:add -d @administrator-access-m
+curl -sk -H "api-token: $TOKEN" -H "Content-Type: application/json" https://localhost/apis/iam/v2/policies/administrator-access/members:add -d @administrator-access-members-add.json | jq
 # Assign "ingest" token to ingest policy
 # sudo chef-automate iam token create ingest
 curl -sk -H "api-token: $TOKEN" -H "Content-Type: application/json" https://localhost/apis/iam/v2/policies/administrator-access/members:add -d '{"members":["token:ingest"]}' | jq
@@ -15,7 +15,7 @@ curl -sk -H "api-token: $TOKEN" -H "Content-Type: application/json" https://loca
 # List project rules
 curl -sk -H "api-token: $TOKEN" -H "Content-Type: application/json" https://localhost/apis/iam/v2/projects/development/rules | jq
 # Create project rules
-curl -sk -H "api-token: $TOKEN" -H "Content-Type: application/json" https://localhost/apis/iam/v2/projects/development/rules -d @project-development-rules.json | jq
+curl -sk -H "api-token: $TOKEN" -H "Content-Type: application/json" https://localhost/apis/iam/v2/projects/development/rules -d @project-development-rule.json | jq
 
 # Apply project rules
 curl -sk -H "api-token: $TOKEN" https://localhost/apis/iam/v2/apply-rules -X POST | jq
